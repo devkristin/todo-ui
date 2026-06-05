@@ -1,1 +1,42 @@
-<template>Daily Planner</template>
+<script setup lang="ts">
+import { usePlannerStore } from '@/stores/planner';
+import DatePicker from 'primevue/datepicker';
+import Button from 'primevue/button';
+
+const plannerStore = usePlannerStore();
+
+const goToPreviousDay = () => {
+  const prev = new Date(plannerStore.selectedDate);
+  prev.setDate(prev.getDate() - 1);
+  plannerStore.selectedDate = prev;
+};
+
+const goToNextDay = () => {
+  const next = new Date(plannerStore.selectedDate);
+  next.setDate(next.getDate() + 1);
+  plannerStore.selectedDate = next;
+};
+</script>
+
+<template>
+  <div class="flex justify-center">
+    <Button
+      icon="pi pi-chevron-left"
+      @click="goToPreviousDay"
+      text
+      rounded
+      aria-label="Previous Day"
+    />
+    <div class="w-full max-w-2xs">
+      <DatePicker
+        v-model="plannerStore.selectedDate"
+        dateFormat="DD, MM dd, yy"
+        :manualInput="false"
+        inputClass="text-center w-full"
+        panelClass="!left-1/2 !-translate-x-1/2"
+        fluid
+      />
+    </div>
+    <Button icon="pi pi-chevron-right" @click="goToNextDay" text rounded aria-label="Next Day" />
+  </div>
+</template>

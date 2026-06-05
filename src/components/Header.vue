@@ -20,7 +20,7 @@ function handleSignOut() {
 </script>
 
 <template>
-  <header class="p-2 flex items-center justify-end gap-2">
+  <header class="p-4 flex items-center justify-end gap-2">
     <ToggleSwitch v-model="isDark" @change="toggleDarkMode">
       <template #handle>
         <div class="rounded-full">
