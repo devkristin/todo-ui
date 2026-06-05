@@ -1,6 +1,7 @@
+@import 'primeicons/primeicons.css';
 @import 'tailwindcss';
 @import 'tailwindcss-primeui';
-@import 'primeicons/primeicons.css';
+@custom-variant dark (&:where(.my-app-dark, .my-app-dark *));
 
 body {
   min-height: 100vh;
@@ -23,18 +24,13 @@ body {
     'Droid Sans',
     'Helvetica Neue',
     sans-serif;
-  font-size: 15px;
+  font-size: 16px;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
 
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  font-weight: normal;
+  background-color: var(--p-content-background);
+  color: var(--p-text-color);
 }
 
 #app {

@@ -42,36 +42,42 @@ const handleLogin = async () => {
       <template #content>
         <form class="flex flex-col pt-4 gap-5" @submit.prevent="handleLogin">
           <div>
-            <label for="email">Email Address</label>
-            <IconField>
-              <InputIcon class="pi pi-envelope" />
-              <InputText
-                id="email"
-                v-model="email"
-                type="email"
-                placeholder="you@example.com"
-                size="large"
-                fluid
-                required
-              />
-            </IconField>
+            <label>
+              Email Address
+              <IconField>
+                <InputIcon class="pi pi-envelope" />
+                <InputText
+                  id="email"
+                  v-model="email"
+                  type="email"
+                  placeholder="you@example.com"
+                  size="large"
+                  fluid
+                  required
+                  autocomplete="email"
+                />
+              </IconField>
+            </label>
           </div>
 
           <div>
-            <label for="password">Password</label>
-            <IconField>
-              <InputIcon class="pi pi-lock" />
-              <Password
-                id="password"
-                v-model="password"
-                placeholder="••••••••"
-                :feedback="false"
-                toggleMask
-                size="large"
-                fluid
-                required
-              />
-            </IconField>
+            <label>
+              Password
+              <IconField>
+                <InputIcon class="pi pi-lock" />
+                <Password
+                  id="password"
+                  v-model="password"
+                  placeholder="••••••••"
+                  :feedback="false"
+                  toggleMask
+                  size="large"
+                  fluid
+                  required
+                  autocomplete="current-password"
+                />
+              </IconField>
+            </label>
           </div>
 
           <div v-if="authStore.error" class="flex gap-2 items-center">

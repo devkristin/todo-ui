@@ -51,53 +51,62 @@ const handleRegister = async () => {
       <template #content>
         <form class="flex flex-col pt-4 gap-5" @submit.prevent="handleRegister">
           <div>
-            <label for="email">Email Address</label>
-            <IconField>
-              <InputIcon class="pi pi-envelope" />
-              <InputText
-                id="email"
-                v-model="email"
-                type="email"
-                placeholder="you@example.com"
-                size="large"
-                fluid
-                required
-              />
-            </IconField>
+            <label>
+              Email Address
+              <IconField>
+                <InputIcon class="pi pi-envelope" />
+                <InputText
+                  id="email"
+                  v-model="email"
+                  type="email"
+                  placeholder="you@example.com"
+                  size="large"
+                  fluid
+                  required
+                  autocomplete="email"
+                />
+              </IconField>
+            </label>
           </div>
 
           <div>
-            <label for="password">Password</label>
-            <IconField>
-              <InputIcon class="pi pi-lock" />
-              <Password
-                id="password"
-                v-model="password"
-                placeholder="••••••••"
-                :feedback="false"
-                toggleMask
-                size="large"
-                fluid
-                required
-              />
-            </IconField>
+            <label>
+              Password
+              <IconField>
+                <InputIcon class="pi pi-lock" />
+                <Password
+                  id="password"
+                  v-model="password"
+                  placeholder="••••••••"
+                  :feedback="false"
+                  toggleMask
+                  size="large"
+                  fluid
+                  required
+                  autocomplete="new-password"
+                />
+              </IconField>
+            </label>
           </div>
 
           <div>
-            <label for="confirmPassword">Confirm Password</label>
-            <IconField>
-              <InputIcon class="pi pi-shield" />
-              <Password
-                id="confirmPassword"
-                v-model="confirmPassword"
-                placeholder="••••••••"
-                :feedback="false"
-                toggleMask
-                size="large"
-                fluid
-                required
-              />
-            </IconField>
+            <label>
+              Confirm Password
+              <IconField>
+                <InputIcon class="pi pi-shield" />
+                <Password
+                  id="confirmPassword"
+                  v-model="confirmPassword"
+                  placeholder="••••••••"
+                  :feedback="false"
+                  toggleMask
+                  size="large"
+                  fluid
+                  required
+                  autocomplete="new-password"
+                />
+              </IconField>
+            </label>
           </div>
 
           <div v-if="authStore.error || localError" class="flex gap-2 items-center">
@@ -112,7 +121,7 @@ const handleRegister = async () => {
       <template #footer>
         <div>
           Already have an account?
-          <Button variant="link" as="router-link" label="Sign in here" to="login" />
+          <Button variant="link" as="router-link" label="Sign in here" to="/login" />
         </div>
       </template>
     </Card>

@@ -1,11 +1,12 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import { useAuthStore } from '../stores/auth';
-import LoginView from '../views/LoginView.vue';
+import LandingView from '../views/LandingView.vue';
 
 const router = createRouter({
   history: createWebHistory(),
   routes: [
-    { path: '/', component: LoginView },
+    { path: '/', component: LandingView },
+    { path: '/login', component: () => import('../views/LoginView.vue') },
     { path: '/register', component: () => import('../views/RegisterView.vue') },
     {
       path: '/planner',
@@ -21,7 +22,10 @@ router.beforeEach((to, from, next) => {
 
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
     next('/');
-  } else if ((to.path === '/' || to.path === '/register') && authStore.isAuthenticated) {
+  } else if (
+    (to.path === '/' || to.path === '/login' || to.path === '/register') &&
+    authStore.isAuthenticated
+  ) {
     next('/planner');
   } else {
     next();
