@@ -1,48 +1,46 @@
-# .
+# Todo List UI
 
-This template should help get you started developing with Vue 3 in Vite.
+Frontend for the custom Daily Planner and Todo List application.
 
-## Recommended IDE Setup
+Built with Vue 3 (Composition API), TypeScript, Vite, Pinia, PrimeVue, and Tailwind CSS.
 
-[VS Code](https://code.visualstudio.com/) + [Vue (Official)](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+## Prerequisites
 
-## Recommended Browser Setup
+- Node.js (v18+ recommended)
+- The [Todo List API](https://github.com/devkristin/todo-api) must be running locally
 
-- Chromium-based browsers (Chrome, Edge, Brave, etc.):
-  - [Vue.js devtools](https://chromewebstore.google.com/detail/vuejs-devtools/nhdogjmejiglipccpnnnanhbledajbpd)
-  - [Turn on Custom Object Formatter in Chrome DevTools](http://bit.ly/object-formatters)
-- Firefox:
-  - [Vue.js devtools](https://addons.mozilla.org/en-US/firefox/addon/vue-js-devtools/)
-  - [Turn on Custom Object Formatter in Firefox DevTools](https://fxdx.dev/firefox-devtools-custom-object-formatters/)
+## Getting Started
 
-## Type Support for `.vue` Imports in TS
+1. Install Dependencies
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+   ```
+   npm install
+   ```
 
-## Customize configuration
+2. Create a Local Environment File (.env)
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+   Create a .env file in the root directory and point it to your local API server
 
-## Project Setup
+   ```
+   VITE_API_BASE_URL=http://localhost:3000
+   ```
 
-```sh
-npm install
-```
+3. Run Local Development Server
 
-### Compile and Hot-Reload for Development
+   Compiles and hot-reloads the application in dev mode
 
-```sh
-npm run dev
-```
+   ```
+   npm run dev
+   ```
 
-### Type-Check, Compile and Minify for Production
+   - Access the application at: http://localhost:5173
 
-```sh
-npm run build
-```
+## Production & Quality Tools
 
-### Lint with [ESLint](https://eslint.org/)
+- Build: `npm run build` - Type-checks and creates a production-ready build in the /dist directory.
 
-```sh
-npm run lint
-```
+- Type-Check: `npm run type-check` - Runs vue-tsc to perform static type analysis on .vue and .ts files.
+
+- Linting: `npm run lint` - Executes automated code linting via oxlint and eslint.
+
+- Formatting: `npm run format` - Forces consistent code style using Prettier.
