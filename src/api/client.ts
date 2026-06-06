@@ -8,12 +8,12 @@ const client = axios.create({
 });
 
 client.interceptors.request.use(async (config) => {
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
+  const authStore = useAuthStore();
 
-  if (session?.access_token) {
-    config.headers.Authorization = `Bearer ${session.access_token}`;
+  const token = authStore.token;
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
   }
   return config;
 });
