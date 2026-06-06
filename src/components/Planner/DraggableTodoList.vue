@@ -46,16 +46,14 @@ const handleDragStart = (todo: TodoResponse) => {
   draggedItem.value = todo;
 };
 
-const handleDragOver = (event: DragEvent) => {
+const handleDragOver = (event: DragEvent, todo: TodoResponse) => {
   event.preventDefault();
   event.dataTransfer!.dropEffect = 'move';
-};
-
-const handleDragEnter = (todo: TodoResponse) => {
   draggedOverItem.value = todo;
 };
 
-const handleDragLeave = () => {
+const handleDragEnd = () => {
+  draggedItem.value = null;
   draggedOverItem.value = null;
 };
 
@@ -219,9 +217,8 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
         :key="todo.id"
         draggable="true"
         @dragstart="handleDragStart(todo)"
-        @dragover="handleDragOver"
-        @dragenter="handleDragEnter(todo)"
-        @dragleave="handleDragLeave"
+        @dragover="handleDragOver($event, todo)"
+        @dragend="handleDragEnd"
         @drop="handleDrop($event, todo)"
         :class="[
           'flex items-center gap-3 p-3 rounded-md shadow dark:border-2 cursor-move transition-all',
