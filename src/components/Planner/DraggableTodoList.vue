@@ -4,6 +4,8 @@ import { todosApi } from '@/api/todos';
 import type { TodoResponse } from '@/types/todos';
 import Checkbox from 'primevue/checkbox';
 import Button from 'primevue/button';
+import Dialog from 'primevue/dialog';
+import InputText from 'primevue/inputtext';
 import Menu from 'primevue/menu';
 import type { MenuItem } from 'primevue/menuitem';
 
@@ -18,9 +20,9 @@ const props = withDefaults(defineProps<Props>(), {
 });
 
 const emit = defineEmits<{
-  'add-todo': [];
-  'edit-todo': [todo: TodoResponse];
-  'delete-todo': [todo: TodoResponse];
+  'create-todo': [title: string];
+  'update-todo': [{ id: string; title: string }];
+  'delete-todo': [id: string];
   'todos-reordered': [];
 }>();
 
@@ -28,6 +30,11 @@ const draggedItem = ref<TodoResponse | null>(null);
 const draggedOverItem = ref<TodoResponse | null>(null);
 const menuRefs = ref<Record<string, InstanceType<typeof Menu>>>({});
 const updatingTodoId = ref<string | null>(null);
+const editingTodo = ref<TodoResponse | null>(null);
+const editTitle = ref('');
+const showEditDialog = ref(false);
+const showDeleteDialog = ref(false);
+const showAddDialog = ref(false);
 
 const sortedTodos = computed(() => {
   return [...props.todos].sort((a, b) => a.position - b.position);
@@ -65,7 +72,6 @@ const handleDrop = async (event: DragEvent, dropTarget: TodoResponse) => {
   let abovePosition: number | null = null;
   let belowPosition: number | null = null;
 
-  // Calculate boundary conditions based on drop direction
   if (draggedIndex < dropIndex) {
     abovePosition = dropTarget.position;
     const belowIndex = dropIndex + 1;
@@ -97,6 +103,45 @@ const handleCheckboxChange = async (todo: TodoResponse, checked: boolean) => {
   }
 };
 
+const handleOpenAddDialog = () => {
+  editingTodo.value = null;
+  editTitle.value = '';
+  showAddDialog.value = true;
+};
+
+const handleOpenEditDialog = (todo: TodoResponse) => {
+  editingTodo.value = todo;
+  editTitle.value = todo.title;
+  showEditDialog.value = true;
+};
+
+const handleOpenDeleteDialog = (todo: TodoResponse) => {
+  editingTodo.value = todo;
+  editTitle.value = todo.title;
+  showDeleteDialog.value = true;
+};
+
+const handleSaveAdd = () => {
+  if (!editTitle.value.trim()) return;
+  showAddDialog.value = false;
+  emit('create-todo', editTitle.value.trim());
+};
+
+const handleSaveEdit = () => {
+  if (!editingTodo.value || !editTitle.value.trim()) return;
+  showEditDialog.value = false;
+  emit('update-todo', {
+    id: editingTodo.value.id,
+    title: editTitle.value.trim(),
+  });
+};
+
+const handleSaveDelete = () => {
+  if (!editingTodo.value) return;
+  showDeleteDialog.value = false;
+  emit('delete-todo', editingTodo.value.id);
+};
+
 const showMenu = (event: Event, todoId: string) => {
   menuRefs.value[todoId]?.toggle(event);
 };
@@ -114,21 +159,21 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
     label: 'Edit',
     icon: 'pi pi-pencil',
     command: () => {
-      emit('edit-todo', todo);
+      handleOpenEditDialog(todo);
     },
   },
   {
     label: 'Delete',
     icon: 'pi pi-trash',
     command: () => {
-      emit('delete-todo', todo);
+      handleOpenDeleteDialog(todo);
     },
   },
 ];
 </script>
 
 <template>
-  <div class="rounded-lg transition-colors">
+  <div class="rounded-xl shadow dark:bg-surface-950 p-4">
     <div class="flex items-center justify-between mb-6">
       <h2 class="text-lg font-bold">{{ title }}</h2>
       <Button
@@ -137,7 +182,7 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
         text
         aria-label="Add Todo"
         label="Add"
-        @click="$emit('add-todo')"
+        @click="handleOpenAddDialog"
       />
     </div>
 
@@ -159,7 +204,7 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
         @dragleave="handleDragLeave"
         @drop="handleDrop($event, todo)"
         :class="[
-          'flex items-center gap-3 p-3 rounded-md border-2 border-surface-100 cursor-move transition-all',
+          'flex items-center gap-3 p-3 rounded-md shadow dark:border-2 cursor-move transition-all',
           draggedOverItem?.id === todo.id
             ? 'border-violet-600 bg-violet-50 dark:bg-violet-900/20'
             : draggedItem?.id === todo.id
@@ -178,7 +223,7 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
 
         <span
           :class="[
-            'flex-1 text-sm transition-colors',
+            'flex-1 text-sm transition-colors font-bold !text-[var(--p-text-color)]',
             todo.is_completed
               ? 'line-through text-surface-400 dark:text-surface-500'
               : 'text-surface-900 dark:text-surface-0',
@@ -206,6 +251,74 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
         </div>
       </div>
     </div>
+
+    <Dialog
+      v-model:visible="showAddDialog"
+      header="Add"
+      :modal="true"
+      :closable="true"
+      class="w-full max-w-md"
+    >
+      <div class="space-y-4">
+        <div class="flex flex-col gap-2">
+          <InputText
+            id="title"
+            aria-label="Title"
+            v-model="editTitle"
+            placeholder="Enter to-do item"
+            autofocus
+            @keyup.enter="handleSaveAdd"
+          />
+        </div>
+        <div class="flex gap-2 justify-end">
+          <Button label="Cancel" severity="secondary" @click="showAddDialog = false" />
+          <Button label="Save" :loading="isLoading" @click="handleSaveAdd" />
+        </div>
+      </div>
+    </Dialog>
+
+    <Dialog
+      v-model:visible="showEditDialog"
+      header="Edit"
+      :modal="true"
+      :closable="true"
+      class="w-full max-w-md"
+    >
+      <div class="space-y-4">
+        <div class="flex flex-col gap-2">
+          <InputText
+            id="title"
+            aria-label="Title"
+            v-model="editTitle"
+            placeholder="Enter to-do item"
+            autofocus
+            @keyup.enter="handleSaveEdit"
+          />
+        </div>
+        <div class="flex gap-2 justify-end">
+          <Button label="Cancel" severity="secondary" @click="showEditDialog = false" />
+          <Button label="Save" :loading="isLoading" @click="handleSaveEdit" />
+        </div>
+      </div>
+    </Dialog>
+
+    <Dialog
+      v-model:visible="showDeleteDialog"
+      header="Delete"
+      :modal="true"
+      :closable="true"
+      class="w-full max-w-md"
+    >
+      <div class="space-y-4">
+        <div class="flex flex-col gap-2">
+          <h2>Are you sure you want to delete "{{ editTitle }}" from your to-do list?</h2>
+        </div>
+        <div class="flex gap-2 justify-end">
+          <Button label="Cancel" severity="secondary" @click="showDeleteDialog = false" />
+          <Button label="Delete" :loading="isLoading" @click="handleSaveDelete" />
+        </div>
+      </div>
+    </Dialog>
   </div>
 </template>
 

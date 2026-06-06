@@ -19,7 +19,7 @@ export const usePlannerStore = defineStore('planner', () => {
   });
 
   /**
-   * Fetch todos for the selected date that aren't priority and aren't follow ups
+   * Fetch todos for the selected date
    */
   const fetchDailyTodos = async () => {
     isLoading.value = true;
@@ -28,8 +28,6 @@ export const usePlannerStore = defineStore('planner', () => {
     try {
       todos.value = await todosApi.getTodos({
         date: formattedApiDate.value,
-        isPriority: false,
-        isFollowUp: false,
       });
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Failed to fetch todos';
@@ -42,7 +40,11 @@ export const usePlannerStore = defineStore('planner', () => {
   /**
    * Get daily todos (non-priority, non-follow-up)
    */
-  const dailyTodos = computed(() => todos.value);
+  const dailyTodos = computed(() => {
+    return todos.value.filter((todo) => {
+      return todo.is_priority === false && todo.is_follow_up === false;
+    });
+  });
 
   /**
    * Set the selected date

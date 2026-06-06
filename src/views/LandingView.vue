@@ -7,11 +7,11 @@ const router = useRouter();
 </script>
 
 <template>
-  <div class="flex flex-wrap md:flex-nowrap w-full gap-4 justify-center">
-    <div class="w-full md:max-w-1/2 px-4">
+  <div class="flex flex-wrap lg:flex-nowrap w-full gap-4 justify-center">
+    <div class="w-full md:w-2/3 lg:max-w-1/2 px-4">
       <img src="../assets/landing.png" alt="Logo" />
     </div>
-    <div class="w-full md:max-w-1/3 lg:max-w-2/5 px-4 mb-8">
+    <div class="w-full md:w-2/3 lg:max-w-1/3 lg:max-w-2/5 px-4 mb-8">
       <h1 class="text-5xl md:text-6xl lg:text-7xl 2xl:text-8xl font-bold mb-4">
         <span class="md:block">Daily</span> Planner
       </h1>
