@@ -243,10 +243,10 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
 
         <span
           :class="[
-            'flex-1 text-sm transition-colors font-bold !text-[var(--p-text-color)]',
+            'flex-1 text-sm transition-colors font-bold',
             todo.is_completed
               ? 'line-through text-surface-400 dark:text-surface-500'
-              : 'text-surface-900 dark:text-surface-0',
+              : '!text-[var(--p-text-color)]',
           ]"
         >
           {{ todo.title }}
