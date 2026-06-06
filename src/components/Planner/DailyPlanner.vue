@@ -3,7 +3,7 @@ import { usePlannerStore } from '@/stores/planner';
 import { watch } from 'vue';
 import DailyDatePicker from './DailyDatePicker.vue';
 import DraggableTodoList from './DraggableTodoList.vue';
-import type { TodoResponse } from '@/types/todos.ts';
+import type { CreateTodoRequest, TodoResponse } from '@/types/todos.ts';
 
 const plannerStore = usePlannerStore();
 
@@ -15,14 +15,17 @@ watch(
   { immediate: true },
 );
 
-const handleCreateTodo = async (title: string) => {
-  if (!title.trim()) return;
+const handleCreateTodo = async (payload: Partial<CreateTodoRequest>) => {
+  if (!payload.title) return;
+
+  const createTodo: CreateTodoRequest = {
+    schedule_date: plannerStore.formattedApiDate,
+    title: payload.title,
+    is_priority: payload.is_priority ?? false,
+  };
 
   try {
-    await plannerStore.createTodo({
-      schedule_date: plannerStore.formattedApiDate,
-      title: title.trim(),
-    });
+    await plannerStore.createTodo(createTodo);
   } catch (error) {
     console.error('Failed to add todo:', error);
   }
@@ -61,6 +64,7 @@ const handleTodosReordered = () => {
       <div class="grid gap-6 md:gap-8 lg:gap-8">
         <DraggableTodoList
           title="Top Priorities"
+          priority
           :todos="plannerStore.topPriorityTodos"
           :isLoading="plannerStore.isLoading"
           @create-todo="handleCreateTodo"

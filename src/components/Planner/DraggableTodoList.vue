@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { todosApi } from '@/api/todos';
-import type { TodoResponse } from '@/types/todos';
+import type { CreateTodoRequest, TodoResponse } from '@/types/todos';
 import Checkbox from 'primevue/checkbox';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
@@ -11,16 +11,18 @@ import type { MenuItem } from 'primevue/menuitem';
 
 interface Props {
   title: string;
+  priority?: boolean;
   todos: TodoResponse[];
   isLoading?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   isLoading: false,
+  priority: false,
 });
 
 const emit = defineEmits<{
-  'create-todo': [title: string];
+  'create-todo': [Partial<CreateTodoRequest>];
   'update-todo': [Partial<TodoResponse>];
   'delete-todo': [id: string];
   'todos-reordered': [];
@@ -124,7 +126,10 @@ const handleOpenDeleteDialog = (todo: TodoResponse) => {
 const handleSaveAdd = () => {
   if (!editTitle.value.trim()) return;
   showAddDialog.value = false;
-  emit('create-todo', editTitle.value.trim());
+  emit('create-todo', {
+    title: editTitle.value.trim(),
+    is_priority: props.priority,
+  });
 };
 
 const handleSaveEdit = () => {
@@ -269,7 +274,7 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
 
     <Dialog
       v-model:visible="showAddDialog"
-      header="Add"
+      :header="props.priority ? 'Add Priority' : 'Add To-Do'"
       :modal="true"
       :closable="true"
       class="w-full max-w-md"
@@ -280,7 +285,7 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
             id="title"
             aria-label="Title"
             v-model="editTitle"
-            placeholder="Enter to-do item"
+            placeholder="e.g. Go for a walk"
             autofocus
             @keyup.enter="handleSaveAdd"
           />
@@ -305,7 +310,7 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
             id="title"
             aria-label="Title"
             v-model="editTitle"
-            placeholder="Enter to-do item"
+            placeholder="e.g. Go for a walk"
             autofocus
             @keyup.enter="handleSaveEdit"
           />
