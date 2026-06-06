@@ -59,7 +59,7 @@ defineProps<{ isHovered: boolean }>();
 .petal-l,
 .petal-r {
   transition:
-    transform 1.8s,
+    transform 1s,
     fill 1s,
     stroke 1s;
   transform-origin: 50% 80%;
