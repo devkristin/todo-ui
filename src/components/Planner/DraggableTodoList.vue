@@ -21,7 +21,7 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emit = defineEmits<{
   'create-todo': [title: string];
-  'update-todo': [{ id: string; title: string }];
+  'update-todo': [Partial<TodoResponse>];
   'delete-todo': [id: string];
   'todos-reordered': [];
 }>();
@@ -142,6 +142,13 @@ const handleSaveDelete = () => {
   emit('delete-todo', editingTodo.value.id);
 };
 
+const handlePriorityChange = (todo: TodoResponse) => {
+  emit('update-todo', {
+    id: todo.id,
+    is_priority: !todo.is_priority,
+  });
+};
+
 const showMenu = (event: Event, todoId: string) => {
   menuRefs.value[todoId]?.toggle(event);
 };
@@ -168,6 +175,14 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
     command: () => {
       handleOpenDeleteDialog(todo);
     },
+  },
+  {
+    label: todo.is_priority ? 'Deprioritize' : 'Top Priority',
+    icon: todo.is_priority ? 'pi pi-arrow-down' : 'pi pi-arrow-up',
+    command: () => {
+      handlePriorityChange(todo);
+    },
+    visible: todo.is_follow_up === false,
   },
 ];
 </script>

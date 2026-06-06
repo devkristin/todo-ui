@@ -3,6 +3,7 @@ import { usePlannerStore } from '@/stores/planner';
 import { watch } from 'vue';
 import DailyDatePicker from './DailyDatePicker.vue';
 import DraggableTodoList from './DraggableTodoList.vue';
+import type { TodoResponse } from '@/types/todos.ts';
 
 const plannerStore = usePlannerStore();
 
@@ -27,11 +28,11 @@ const handleCreateTodo = async (title: string) => {
   }
 };
 
-const handleUpdateTodo = async (payload: { id: string; title: string }) => {
-  if (!payload.title.trim()) return;
+const handleUpdateTodo = async (payload: Partial<TodoResponse>) => {
+  if (!payload.id) return;
 
   try {
-    await plannerStore.updateTodo(payload.id, { title: payload.title.trim() });
+    await plannerStore.updateTodo(payload.id, { ...payload });
   } catch (error) {
     console.error('Failed to update todo:', error);
   }
