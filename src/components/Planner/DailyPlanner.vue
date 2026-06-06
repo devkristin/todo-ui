@@ -55,11 +55,20 @@ const handleTodosReordered = () => {
     <DailyDatePicker />
     <section class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 lg:gap-14">
       <div class="grow rounded-xl shadow dark:bg-surface-950 p-4">
-        <h2 class="text-lg font-bold uppercase">Schedule</h2>
+        <h2 class="text-lg font-bold">Schedule</h2>
       </div>
-      <div>
+      <div class="grid gap-6 md:gap-8 lg:gap-8">
         <DraggableTodoList
-          title="TO-DO LIST"
+          title="Top Priorities"
+          :todos="plannerStore.topPriorityTodos"
+          :isLoading="plannerStore.isLoading"
+          @create-todo="handleCreateTodo"
+          @update-todo="handleUpdateTodo"
+          @delete-todo="handleDeleteTodo"
+          @todos-reordered="handleTodosReordered"
+        />
+        <DraggableTodoList
+          title="To-Do List"
           :todos="plannerStore.dailyTodos"
           :isLoading="plannerStore.isLoading"
           @create-todo="handleCreateTodo"

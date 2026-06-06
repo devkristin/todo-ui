@@ -47,6 +47,15 @@ export const usePlannerStore = defineStore('planner', () => {
   });
 
   /**
+   * Get top priority todos (non-follow-up)
+   */
+  const topPriorityTodos = computed(() => {
+    return todos.value.filter((todo) => {
+      return todo.is_priority === true && todo.is_follow_up === false;
+    });
+  });
+
+  /**
    * Set the selected date
    */
   const setSelectedDate = (date: Date) => {
@@ -114,6 +123,7 @@ export const usePlannerStore = defineStore('planner', () => {
     isLoading,
     error,
     dailyTodos,
+    topPriorityTodos,
     fetchDailyTodos,
     setSelectedDate,
     updateTodo,
