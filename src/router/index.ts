@@ -17,18 +17,21 @@ const router = createRouter({
   ],
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to) => {
   const authStore = useAuthStore();
 
+  if (!authStore.token) {
+    await authStore.init();
+  }
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-    next('/');
+    return '/';
   } else if (
     (to.path === '/' || to.path === '/login' || to.path === '/register') &&
     authStore.isAuthenticated
   ) {
-    next('/planner');
+    return '/planner';
   } else {
-    next();
+    return true;
   }
 });
 

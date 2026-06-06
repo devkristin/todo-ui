@@ -13,8 +13,8 @@ function toggleDarkMode() {
   document.documentElement.classList.toggle('my-app-dark');
 }
 
-function handleSignOut() {
-  authStore.signOut();
+async function handleSignOut() {
+  await authStore.signOut();
   router.push('/');
 }
 </script>

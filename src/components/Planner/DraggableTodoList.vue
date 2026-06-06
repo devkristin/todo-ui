@@ -175,19 +175,19 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
     },
   },
   {
-    label: 'Delete',
-    icon: 'pi pi-trash',
-    command: () => {
-      handleOpenDeleteDialog(todo);
-    },
-  },
-  {
     label: todo.is_priority ? 'Deprioritize' : 'Top Priority',
     icon: todo.is_priority ? 'pi pi-arrow-down' : 'pi pi-arrow-up',
     command: () => {
       handlePriorityChange(todo);
     },
     visible: todo.is_follow_up === false,
+  },
+  {
+    label: 'Delete',
+    icon: 'pi pi-trash',
+    command: () => {
+      handleOpenDeleteDialog(todo);
+    },
   },
 ];
 </script>

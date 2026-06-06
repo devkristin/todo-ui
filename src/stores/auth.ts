@@ -1,10 +1,6 @@
+import { supabase } from '@/api/supabase';
 import { defineStore } from 'pinia';
-import client from '../api/client';
-
-export interface User {
-  id: string;
-  email: string;
-}
+import type { User } from '@supabase/supabase-js';
 
 interface AuthState {
   user: User | null;
@@ -15,32 +11,36 @@ interface AuthState {
 
 export const useAuthStore = defineStore('auth', {
   state: (): AuthState => ({
-    user: JSON.parse(localStorage.getItem('user') || 'null'),
-    token: localStorage.getItem('token') || null,
+    user: null,
+    token: null,
     loading: false,
     error: null,
   }),
 
   getters: {
-    isAuthenticated: (state) => !!state.token,
+    isAuthenticated: (state): boolean => !!state.token,
   },
 
   actions: {
+    async init() {
+      const { data } = await supabase.auth.getSession();
+      if (data.session) {
+        this.token = data.session.access_token;
+        this.user = data.session.user;
+      }
+    },
+
     async login(email: string, password: string) {
       this.loading = true;
       this.error = null;
       try {
-        const response = await client.post('/auth/login', { email, password });
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
 
-        this.token = response.data.access_token;
-        this.user = response.data.user;
-
-        if (this.token && this.user) {
-          localStorage.setItem('token', this.token);
-          localStorage.setItem('user', JSON.stringify(this.user));
-        }
+        this.token = data.session.access_token;
+        this.user = data.session.user;
       } catch (err: any) {
-        this.error = err.response?.data?.error || 'Login failed';
+        this.error = err.message || 'Login failed';
         throw err;
       } finally {
         this.loading = false;
@@ -51,20 +51,21 @@ export const useAuthStore = defineStore('auth', {
       this.loading = true;
       this.error = null;
       try {
-        await client.post('/auth/register', { email, password });
+        const { error } = await supabase.auth.signUp({ email, password });
+        if (error) throw error;
       } catch (err: any) {
-        this.error = err.response?.data?.error || 'Registration failed';
+        this.error = err.message || 'Registration failed';
         throw err;
       } finally {
         this.loading = false;
       }
     },
 
-    signOut() {
+    async signOut() {
+      await supabase.auth.signOut();
       this.user = null;
       this.token = null;
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+      this.error = null;
     },
   },
 });

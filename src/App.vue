@@ -1,6 +1,14 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router';
 import Header from './components/Header.vue';
+import { useHealthCheck } from './composables/useHealthCheck.ts';
+import { onMounted } from 'vue';
+
+const healthCheck = useHealthCheck();
+
+onMounted(() => {
+  healthCheck.init();
+});
 </script>
 
 <template>
