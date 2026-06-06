@@ -1,7 +1,19 @@
+@import 'https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400..700;1,400..700&display=swap';
 @import 'primeicons/primeicons.css';
 @import 'tailwindcss';
 @import 'tailwindcss-primeui';
 @custom-variant dark (&:where(.my-app-dark, .my-app-dark *));
+
+@theme {
+  --font-custom: 'Libre Baskerville', serif;
+}
+
+@layer base {
+  h1,
+  h2 {
+    font-family: var(--font-custom);
+  }
+}
 
 body {
   min-height: 100vh;
