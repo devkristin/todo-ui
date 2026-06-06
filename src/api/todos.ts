@@ -63,7 +63,7 @@ export const todosApi = {
     aboveTodoPosition: number | null,
     belowTodoPosition: number | null,
   ): Promise<TodoResponse> {
-    const res = await client.put<TodoResponse>(`${TODOS_BASE_URL}/${id}/move`, {
+    const res = await client.put<TodoResponse>(`${TODOS_BASE_URL}/${id}/position`, {
       aboveTodoPosition,
       belowTodoPosition,
     });

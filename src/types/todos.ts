@@ -24,6 +24,7 @@ export interface UpdateTodoRequest {
   title?: string;
   schedule_date?: string;
   schedule_time?: string | null;
+    is_completed?: boolean;
   is_priority?: boolean;
   is_follow_up?: boolean;
 }
