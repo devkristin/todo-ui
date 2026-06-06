@@ -146,7 +146,7 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
         v-if="sortedTodos.length === 0 && !isLoading"
         class="text-center py-8 text-surface-500 dark:text-surface-400"
       >
-        <p>No todos yet. Add one to get started!</p>
+        <p>No to-dos yet. Add one to get started!</p>
       </div>
 
       <div

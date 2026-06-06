@@ -8,7 +8,7 @@ const plannerType = ref<PlannerType>('Daily');
 
 <template>
   <div class="grow w-full p-4">
-    <h1 class="text-2xl font-bold mb-4">{{ plannerType }} Planner</h1>
+    <h1 class="text-2xl font-bold mb-4 lg:absolute">{{ plannerType }} Planner</h1>
     <DailyPlanner v-if="plannerType === 'Daily'" />
   </div>
 </template>
