@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import { todosApi } from '../api/todos';
-import type { TodoResponse } from '../types/todos';
+import type { CreateTodoRequest, TodoResponse } from '../types/todos';
 
 export const usePlannerStore = defineStore('planner', () => {
   const selectedDate = ref(new Date());
@@ -51,13 +51,71 @@ export const usePlannerStore = defineStore('planner', () => {
     selectedDate.value = date;
   };
 
+  /**
+   * Update todo
+   */
+  const updateTodo = async (id: string, todo: Partial<TodoResponse>) => {
+    isLoading.value = true;
+    error.value = null;
+
+    try {
+      await todosApi.updateTodo(id, todo);
+      await fetchDailyTodos();
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'Failed to fetch todos';
+      todos.value = [];
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
+  /**
+   * Delete todo
+   */
+  const deleteTodo = async (id: string) => {
+    isLoading.value = true;
+    error.value = null;
+
+    try {
+      await todosApi.deleteTodo(id);
+      await fetchDailyTodos();
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'Failed to fetch todos';
+      todos.value = [];
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
+  /**
+   * Create todo
+   */
+  const createTodo = async (todo: CreateTodoRequest) => {
+    isLoading.value = true;
+    error.value = null;
+
+    try {
+      await todosApi.createTodo(todo);
+      await fetchDailyTodos();
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'Failed to fetch todos';
+      todos.value = [];
+    } finally {
+      isLoading.value = false;
+    }
+  };
+
   return {
     selectedDate,
+    formattedApiDate,
     todos,
     isLoading,
     error,
     dailyTodos,
     fetchDailyTodos,
     setSelectedDate,
+    updateTodo,
+    deleteTodo,
+    createTodo,
   };
 });

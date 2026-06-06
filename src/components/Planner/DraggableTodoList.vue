@@ -20,6 +20,7 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<{
   'add-todo': [];
   'edit-todo': [todo: TodoResponse];
+  'delete-todo': [todo: TodoResponse];
   'todos-reordered': [];
 }>();
 
@@ -116,19 +117,25 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
       emit('edit-todo', todo);
     },
   },
+  {
+    label: 'Delete',
+    icon: 'pi pi-trash',
+    command: () => {
+      emit('delete-todo', todo);
+    },
+  },
 ];
 </script>
 
 <template>
-  <div class="rounded-lg shadow transition-colors">
+  <div class="rounded-lg transition-colors">
     <div class="flex items-center justify-between mb-6">
-      <h2 class="text-xl font-semibold text-surface-900 dark:text-surface-0">{{ title }}</h2>
+      <h2 class="text-lg font-bold">{{ title }}</h2>
       <Button
         icon="pi pi-plus"
         rounded
         text
         aria-label="Add Todo"
-        variant="outlined"
         label="Add"
         @click="$emit('add-todo')"
       />
@@ -142,10 +149,6 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
         <p>No todos yet. Add one to get started!</p>
       </div>
 
-      <div v-if="isLoading" class="text-center py-8">
-        <p class="text-surface-500 dark:text-surface-400">Loading todos...</p>
-      </div>
-
       <div
         v-for="todo in sortedTodos"
         :key="todo.id"
@@ -156,7 +159,7 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
         @dragleave="handleDragLeave"
         @drop="handleDrop($event, todo)"
         :class="[
-          'flex items-center gap-3 p-3 rounded-md border-2 border-transparent cursor-move transition-all',
+          'flex items-center gap-3 p-3 rounded-md border-2 border-surface-100 cursor-move transition-all',
           draggedOverItem?.id === todo.id
             ? 'border-violet-600 bg-violet-50 dark:bg-violet-900/20'
             : draggedItem?.id === todo.id
