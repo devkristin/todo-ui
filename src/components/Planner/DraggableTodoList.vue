@@ -163,7 +163,7 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
   },
   {
     label: todo.is_priority ? 'Deprioritize' : 'Prioritize',
-    icon: todo.is_priority ? 'pi pi-arrow-down' : 'pi pi-arrow-up',
+    icon: 'pi pi-star',
     command: () => {
       handlePriorityChange(todo);
     },
@@ -182,7 +182,9 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
 <template>
   <div class="rounded-xl shadow dark:bg-surface-950 pt-3 px-4 pb-4">
     <div class="flex items-center justify-between mb-2">
-      <h2 class="text-lg font-bold">{{ title }}</h2>
+      <h2 class="text-lg font-bold">
+        {{ title }}
+      </h2>
       <Button
         class="!p-1 !rounded"
         icon="pi pi-plus"
