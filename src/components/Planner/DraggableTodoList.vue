@@ -146,7 +146,15 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
         v-if="props.todos.length === 0 && !isLoading"
         class="text-center py-8 text-surface-500 dark:text-surface-400"
       >
-        <p>No to-dos yet. Add one to get started!</p>
+        <p
+          :class="{
+            'rounded p-4 text-[var(--p-text-color)] dark:bg-transparent': true,
+            'bg-secondary-200': props.priority,
+            'bg-primary-200': !props.priority,
+          }"
+        >
+          No to-dos yet. Add one to get started!
+        </p>
       </div>
 
       <div
@@ -157,15 +165,34 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
         @dragover="plannerStore.handleDragOver($event, todo)"
         @dragend="plannerStore.handleDragEnd"
         @drop="plannerStore.handleDrop($event, todo)"
-        :class="[
-          'flex items-center gap-3 p-3 rounded-md shadow dark:border-2 cursor-move transition-all',
-          plannerStore.draggedOverTodo?.id === todo.id
-            ? 'border-violet-600 bg-violet-50 dark:bg-violet-900/20'
-            : plannerStore.draggedTodo?.id === todo.id
-              ? 'opacity-50 bg-surface-100 dark:bg-surface-800'
-              : 'hover:bg-surface-50 dark:hover:bg-surface-800 border-surface-200 dark:border-surface-700',
-          plannerStore.updatingTodoId === todo.id && 'opacity-75 pointer-events-none',
-        ]"
+        :class="{
+          'flex items-center gap-3 p-3 rounded-md shadow border-2 cursor-move transition-all': true,
+
+          // Dragged over state for Priority list items
+          'border-secondary-300 dark:border-primary-600 bg-secondary-100 dark:bg-primary-900/20':
+            todo.is_priority && plannerStore.draggedOverTodo?.id === todo.id,
+          // Dragged over state for To-Do list items
+          'border-primary-400 bg-primary-100 dark:bg-primary-900/20':
+            !todo.is_priority && plannerStore.draggedOverTodo?.id === todo.id,
+
+          // Dragging state
+          'opacity-40 dark:opacity-50 bg-surface-100 dark:bg-surface-800':
+            plannerStore.draggedTodo?.id === todo.id,
+
+          // Default state for Priority list items
+          'border-transparent hover:border-secondary-300 bg-secondary-200 hover:bg-secondary-200 dark:border-surface-700 dark:hover:border-surface-700 dark:bg-transparent dark:hover:bg-surface-800':
+            todo.is_priority &&
+            plannerStore.draggedOverTodo?.id !== todo.id &&
+            plannerStore.draggedTodo?.id !== todo.id,
+          // Default state for To-Do list items
+          'border-transparent hover:border-primary-300 bg-primary-200 hover:bg-primary-200 dark:border-surface-700 dark:hover:border-surface-700 dark:bg-transparent dark:hover:bg-surface-800':
+            !todo.is_priority &&
+            plannerStore.draggedOverTodo?.id !== todo.id &&
+            plannerStore.draggedTodo?.id !== todo.id,
+
+          // Updating state
+          'opacity-75 pointer-events-none': plannerStore.updatingTodoId === todo.id,
+        }"
       >
         <Checkbox
           :modelValue="todo.is_completed"

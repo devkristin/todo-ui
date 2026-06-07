@@ -29,6 +29,19 @@ const customTheme = definePreset(Aura, {
       900: '{violet.900}',
       950: '{violet.950}',
     },
+    secondary: {
+      50: '#fdfaf5',
+      100: '#f9f1e6',
+      200: '#f3e1cb',
+      300: '#eecea8',
+      400: '#e7b585',
+      500: '#de9960',
+      600: '#cb7d45',
+      700: '#a86134',
+      800: '#884f2e',
+      900: '#6f4228',
+      950: '#3e2315',
+    },
     colorScheme: {
       light: {
         text: {
@@ -76,6 +89,10 @@ app.use(PrimeVue, {
     preset: customTheme,
     options: {
       darkModeSelector: '.my-app-dark',
+      cssLayer: {
+        name: 'primevue',
+        order: 'theme, base, primevue, utilities',
+      },
     },
   },
 });

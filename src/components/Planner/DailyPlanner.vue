@@ -18,7 +18,9 @@ watch(
 <template>
   <div>
     <DailyDatePicker />
-    <section class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 lg:gap-14">
+    <section
+      class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-[minmax(450px,1fr)_2fr] gap-6 md:gap-10 lg:gap-14"
+    >
       <div class="grow rounded-xl shadow dark:bg-surface-950 p-4">
         <h2 class="text-lg font-bold">Schedule</h2>
       </div>
