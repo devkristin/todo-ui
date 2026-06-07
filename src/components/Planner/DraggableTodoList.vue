@@ -105,6 +105,25 @@ const formatTo12Hour = (timeString: string) => {
   return `${displayHours}:${String(minutes).padStart(2, '0')} ${period}`;
 };
 
+const getRoundedDate = (date: Date = new Date()): Date => {
+  const rounded = new Date(date);
+  const minutes = rounded.getMinutes();
+  const remainder = minutes % 30;
+
+  if (remainder !== 0) {
+    rounded.setMinutes(minutes + (30 - remainder));
+  }
+  rounded.setSeconds(0);
+  rounded.setMilliseconds(0);
+  return rounded;
+};
+
+const handleTimeFocus = () => {
+  if (!editTime.value) {
+    editTime.value = getRoundedDate();
+  }
+};
+
 const handleSaveAdd = async () => {
   if (!editTitle.value.trim()) return;
 
@@ -321,7 +340,15 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
         <div class="flex flex-col gap-2 flex-1">
           <IftaLabel class="w-full">
             <label for="time">Time</label>
-            <DatePicker inputId="time" v-model="editTime" timeOnly hourFormat="12" fluid />
+            <DatePicker
+              inputId="time"
+              v-model="editTime"
+              timeOnly
+              hourFormat="12"
+              :stepMinute="30"
+              fluid
+              @focus="handleTimeFocus"
+            />
           </IftaLabel>
         </div>
         <div class="flex gap-2 justify-end">
@@ -362,7 +389,15 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
         <div class="flex flex-col gap-2 flex-1">
           <IftaLabel class="w-full">
             <label for="time">Time</label>
-            <DatePicker inputId="time" v-model="editTime" timeOnly hourFormat="12" fluid />
+            <DatePicker
+              inputId="time"
+              v-model="editTime"
+              timeOnly
+              hourFormat="12"
+              :stepMinute="30"
+              fluid
+              @focus="handleTimeFocus"
+            />
           </IftaLabel>
         </div>
         <div class="flex gap-2 justify-end">
