@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref, watch } from 'vue';
 import { usePlannerStore } from '@/stores/planner';
 import Checkbox from 'primevue/checkbox';
+import { Button } from 'primevue';
 
 const props = withDefaults(
   defineProps<{
@@ -16,6 +17,30 @@ const props = withDefaults(
 
 const plannerStore = usePlannerStore();
 
+const isExpanded = ref(true);
+
+const toggleExpand = () => {
+  isExpanded.value = !isExpanded.value;
+};
+
+const evaluateExpansion = () => {
+  const isMobile = window.innerWidth < 768;
+  const hasScheduledTodos = plannerStore.scheduledDailyTodos.length > 0;
+  if (isMobile) {
+    isExpanded.value = hasScheduledTodos;
+  } else {
+    isExpanded.value = true;
+  }
+};
+
+watch(
+  () => plannerStore.scheduledDailyTodos,
+  () => {
+    evaluateExpansion();
+  },
+  { immediate: true },
+);
+
 const hours = computed(() => {
   const slots = [];
   for (let i = props.startHour; i <= props.endHour; i++) {
@@ -26,11 +51,8 @@ const hours = computed(() => {
 
 const getTodosForHour = (hour: number) => {
   return plannerStore.scheduledDailyTodos.filter((todo) => {
-    const time = todo.schedule_time;
-
-    if (!time) return false;
-    const formattedTime = (time as string).split(':')[0];
-    const todoHour = parseInt(formattedTime ?? '');
+    if (!todo.schedule_time) return false;
+    const todoHour = Number(todo.schedule_time.split(':')[0]);
     return todoHour === hour;
   });
 };
@@ -44,9 +66,17 @@ const handleCheckboxChange = async (todo: any, checked: boolean) => {
 
 <template>
   <div class="rounded-xl shadow dark:bg-surface-950 p-4">
-    <h2 class="text-lg font-bold mb-4">Schedule</h2>
+    <div class="flex items-center justify-between">
+      <h2 class="text-lg font-bold">Schedule</h2>
+      <Button
+        :icon="isExpanded ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
+        text
+        size="small"
+        @click="toggleExpand"
+      />
+    </div>
 
-    <div class="flex flex-col gap-1">
+    <div v-if="isExpanded" class="flex flex-col gap-1 transition-all">
       <div
         v-for="hour in hours"
         :key="hour"
@@ -76,6 +106,13 @@ const handleCheckboxChange = async (todo: any, checked: boolean) => {
           </div>
         </div>
       </div>
+    </div>
+    <div
+      v-if="!isExpanded"
+      class="text-sm text-surface-400 italic cursor-pointer"
+      @click="toggleExpand"
+    >
+      {{ plannerStore.scheduledDailyTodos.length }} scheduled items hidden
     </div>
   </div>
 </template>
