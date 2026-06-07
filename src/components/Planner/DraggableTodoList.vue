@@ -166,10 +166,10 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
         @dragend="plannerStore.handleDragEnd"
         @drop="plannerStore.handleDrop($event, todo)"
         :class="{
-          'flex items-center gap-3 p-3 rounded-md shadow border-2 cursor-move transition-all': true,
+          'flex items-center gap-3 p-3 rounded-md border-2 cursor-move transition-all': true,
 
           // Dragged over state for Priority list items
-          'border-secondary-300 dark:border-primary-600 bg-secondary-100 dark:bg-primary-900/20':
+          'border-secondary-400 dark:border-primary-600 bg-secondary-100 dark:bg-primary-900/20':
             todo.is_priority && plannerStore.draggedOverTodo?.id === todo.id,
           // Dragged over state for To-Do list items
           'border-primary-400 bg-primary-100 dark:bg-primary-900/20':
@@ -180,12 +180,12 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
             plannerStore.draggedTodo?.id === todo.id,
 
           // Default state for Priority list items
-          'border-transparent hover:border-secondary-300 bg-secondary-200 hover:bg-secondary-200 dark:border-surface-700 dark:hover:border-surface-700 dark:bg-transparent dark:hover:bg-surface-800':
+          'border-transparent hover:border-secondary-300 bg-secondary-200 hover:bg-secondary-200/75 dark:border-surface-700 dark:hover:border-surface-700 dark:bg-transparent dark:hover:bg-surface-800':
             todo.is_priority &&
             plannerStore.draggedOverTodo?.id !== todo.id &&
             plannerStore.draggedTodo?.id !== todo.id,
           // Default state for To-Do list items
-          'border-transparent hover:border-primary-300 bg-primary-200 hover:bg-primary-200 dark:border-surface-700 dark:hover:border-surface-700 dark:bg-transparent dark:hover:bg-surface-800':
+          'border-transparent hover:border-primary-300 bg-primary-200 hover:bg-primary-200/75 dark:border-surface-700 dark:hover:border-surface-700 dark:bg-transparent dark:hover:bg-surface-800':
             !todo.is_priority &&
             plannerStore.draggedOverTodo?.id !== todo.id &&
             plannerStore.draggedTodo?.id !== todo.id,
@@ -226,6 +226,7 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
             text
             rounded
             size="small"
+            class="!text-[var(--p-text-color)] !bg-transparent"
             @click="(event) => showMenu(event, todo.id)"
           />
           <Menu :ref="(el) => setMenuRef(el, todo.id)" :model="menuItems(todo)" :popup="true" />
