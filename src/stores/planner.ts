@@ -153,6 +153,17 @@ export const usePlannerStore = defineStore('planner', () => {
   });
 
   /**
+   * Get scheduled daily todos (non-follow-up, has scheduled time)
+   */
+  const scheduledDailyTodos = computed(() => {
+    return todos.value
+      .filter((todo) => {
+        return todo.schedule_time && todo.is_follow_up === false;
+      })
+      .sort((a, b) => a.position - b.position);
+  });
+
+  /**
    * Set the selected date
    */
   const setSelectedDate = (date: Date) => {
@@ -254,6 +265,7 @@ export const usePlannerStore = defineStore('planner', () => {
     error,
     dailyTodos,
     topPriorityTodos,
+    scheduledDailyTodos,
     setUpdatingTodoId,
     setDraggedTodo,
     handleDragStart,
