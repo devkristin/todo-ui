@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import { usePlannerStore } from '@/stores/planner';
 import Checkbox from 'primevue/checkbox';
 import { Button } from 'primevue';
@@ -25,21 +25,14 @@ const toggleExpand = () => {
 
 const evaluateExpansion = () => {
   const isMobile = window.innerWidth < 768;
-  const hasScheduledTodos = plannerStore.scheduledDailyTodos.length > 0;
   if (isMobile) {
-    isExpanded.value = hasScheduledTodos;
-  } else {
-    isExpanded.value = true;
+    isExpanded.value = false;
   }
 };
 
-watch(
-  () => plannerStore.scheduledDailyTodos,
-  () => {
-    evaluateExpansion();
-  },
-  { immediate: true },
-);
+onMounted(() => {
+  evaluateExpansion();
+});
 
 const hours = computed(() => {
   const slots = [];
@@ -112,7 +105,8 @@ const handleCheckboxChange = async (todo: any, checked: boolean) => {
       class="text-sm text-surface-400 italic cursor-pointer"
       @click="toggleExpand"
     >
-      {{ plannerStore.scheduledDailyTodos.length }} scheduled items hidden
+      {{ plannerStore.scheduledDailyTodos.length }} scheduled
+      {{ plannerStore.scheduledDailyTodos.length == 1 ? 'item' : 'items' }} hidden
     </div>
   </div>
 </template>

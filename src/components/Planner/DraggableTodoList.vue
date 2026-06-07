@@ -240,7 +240,7 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
             plannerStore.draggedOverTodo?.id !== todo.id &&
             plannerStore.draggedTodo?.id !== todo.id,
           // Default state for To-Do list items
-          'border-transparent hover:border-primary-300 bg-primary-200 hover:bg-primary-200/75 dark:border-surface-700 dark:hover:border-surface-700 dark:bg-transparent dark:hover:bg-surface-800':
+          'border-transparent hover:border-primary-300 bg-primary-200 hover:bg-primary-200/75 dark:border-surface-700 dark:hover:border-surface-700 dark:bg-surface-900 dark:hover:bg-surface-800':
             !todo.is_priority &&
             plannerStore.draggedOverTodo?.id !== todo.id &&
             plannerStore.draggedTodo?.id !== todo.id,
