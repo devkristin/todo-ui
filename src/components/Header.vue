@@ -31,7 +31,7 @@ async function handleSignOut() {
       @mouseleave="isHovered = false"
     >
       <LotusIcon :isHovered="isHovered" class="max-w-20" />
-      <span class="font-custom font-bold text-xl lowercase">Lotus Tasks</span>
+      <span class="font-custom font-bold text-xl lowercase pr-4">Lotus Tasks</span>
     </RouterLink>
     <span class="flex items-center gap-2">
       <ToggleSwitch v-model="isDark" @change="toggleDarkMode">

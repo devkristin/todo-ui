@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { usePlannerStore } from '@/stores/planner';
-import { watch } from 'vue';
 import DailyDatePicker from './DailyDatePicker.vue';
 import DraggableTodoList from './DraggableTodoList.vue';
-import type { CreateTodoRequest, TodoResponse } from '@/types/todos.ts';
+import { watch } from 'vue';
 
 const plannerStore = usePlannerStore();
 
@@ -14,44 +13,6 @@ watch(
   },
   { immediate: true },
 );
-
-const handleCreateTodo = async (payload: Partial<CreateTodoRequest>) => {
-  if (!payload.title) return;
-
-  const createTodo: CreateTodoRequest = {
-    schedule_date: plannerStore.formattedApiDate,
-    title: payload.title,
-    is_priority: payload.is_priority ?? false,
-  };
-
-  try {
-    await plannerStore.createTodo(createTodo);
-  } catch (error) {
-    console.error('Failed to add todo:', error);
-  }
-};
-
-const handleUpdateTodo = async (payload: Partial<TodoResponse>) => {
-  if (!payload.id) return;
-
-  try {
-    await plannerStore.updateTodo(payload.id, { ...payload });
-  } catch (error) {
-    console.error('Failed to update todo:', error);
-  }
-};
-
-const handleDeleteTodo = async (id: string) => {
-  try {
-    await plannerStore.deleteTodo(id);
-  } catch (error) {
-    console.error('Failed to delete todo:', error);
-  }
-};
-
-const handleTodosReordered = () => {
-  plannerStore.fetchDailyTodos();
-};
 </script>
 
 <template>
@@ -67,19 +28,11 @@ const handleTodosReordered = () => {
           priority
           :todos="plannerStore.topPriorityTodos"
           :isLoading="plannerStore.isLoading"
-          @create-todo="handleCreateTodo"
-          @update-todo="handleUpdateTodo"
-          @delete-todo="handleDeleteTodo"
-          @todos-reordered="handleTodosReordered"
         />
         <DraggableTodoList
           title="To-Do List"
           :todos="plannerStore.dailyTodos"
           :isLoading="plannerStore.isLoading"
-          @create-todo="handleCreateTodo"
-          @update-todo="handleUpdateTodo"
-          @delete-todo="handleDeleteTodo"
-          @todos-reordered="handleTodosReordered"
         />
       </div>
     </section>

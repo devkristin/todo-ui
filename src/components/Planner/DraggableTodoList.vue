@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
-import { todosApi } from '@/api/todos';
+import { ref } from 'vue';
 import type { CreateTodoRequest, TodoResponse } from '@/types/todos';
 import Checkbox from 'primevue/checkbox';
 import Button from 'primevue/button';
@@ -8,6 +7,7 @@ import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import Menu from 'primevue/menu';
 import type { MenuItem } from 'primevue/menuitem';
+import { usePlannerStore } from '@/stores/planner';
 
 interface Props {
   title: string;
@@ -21,85 +21,21 @@ const props = withDefaults(defineProps<Props>(), {
   priority: false,
 });
 
-const emit = defineEmits<{
-  'create-todo': [Partial<CreateTodoRequest>];
-  'update-todo': [Partial<TodoResponse>];
-  'delete-todo': [id: string];
-  'todos-reordered': [];
-}>();
+const plannerStore = usePlannerStore();
 
-const draggedItem = ref<TodoResponse | null>(null);
-const draggedOverItem = ref<TodoResponse | null>(null);
 const menuRefs = ref<Record<string, InstanceType<typeof Menu>>>({});
-const updatingTodoId = ref<string | null>(null);
 const editingTodo = ref<TodoResponse | null>(null);
 const editTitle = ref('');
 const showEditDialog = ref(false);
 const showDeleteDialog = ref(false);
 const showAddDialog = ref(false);
 
-const sortedTodos = computed(() => {
-  return [...props.todos].sort((a, b) => a.position - b.position);
-});
-
-const handleDragStart = (todo: TodoResponse) => {
-  draggedItem.value = todo;
-};
-
-const handleDragOver = (event: DragEvent, todo: TodoResponse) => {
-  event.preventDefault();
-  event.dataTransfer!.dropEffect = 'move';
-  draggedOverItem.value = todo;
-};
-
-const handleDragEnd = () => {
-  draggedItem.value = null;
-  draggedOverItem.value = null;
-};
-
-const handleDrop = async (event: DragEvent, dropTarget: TodoResponse) => {
-  event.preventDefault();
-
-  if (!draggedItem.value || draggedItem.value.id === dropTarget.id) {
-    draggedItem.value = null;
-    draggedOverItem.value = null;
-    return;
-  }
-
-  const draggedIndex = sortedTodos.value.findIndex((t) => t.id === draggedItem.value!.id);
-  const dropIndex = sortedTodos.value.findIndex((t) => t.id === dropTarget.id);
-
-  let abovePosition: number | null = null;
-  let belowPosition: number | null = null;
-
-  if (draggedIndex < dropIndex) {
-    abovePosition = dropTarget.position;
-    const belowIndex = dropIndex + 1;
-    belowPosition = sortedTodos.value[belowIndex]?.position ?? null;
-  } else {
-    belowPosition = dropTarget.position;
-    const aboveIndex = dropIndex - 1;
-    abovePosition = sortedTodos.value[aboveIndex]?.position ?? null;
-  }
-
-  try {
-    updatingTodoId.value = draggedItem.value!.id;
-    await todosApi.moveTodoPosition(draggedItem.value!.id, abovePosition, belowPosition);
-    emit('todos-reordered');
-  } finally {
-    updatingTodoId.value = null;
-    draggedItem.value = null;
-    draggedOverItem.value = null;
-  }
-};
-
 const handleCheckboxChange = async (todo: TodoResponse, checked: boolean) => {
   try {
-    updatingTodoId.value = todo.id;
-    await todosApi.updateTodo(todo.id, { is_completed: checked });
-    emit('todos-reordered');
+    plannerStore.setUpdatingTodoId(todo.id);
+    await plannerStore.updateTodo(todo.id, { is_completed: checked });
   } finally {
-    updatingTodoId.value = null;
+    plannerStore.setUpdatingTodoId(null);
   }
 };
 
@@ -121,35 +57,35 @@ const handleOpenDeleteDialog = (todo: TodoResponse) => {
   showDeleteDialog.value = true;
 };
 
-const handleSaveAdd = () => {
-  if (!editTitle.value.trim()) return;
-  showAddDialog.value = false;
-  emit('create-todo', {
-    title: editTitle.value.trim(),
-    is_priority: props.priority,
-  });
-};
-
-const handleSaveEdit = () => {
-  if (!editingTodo.value || !editTitle.value.trim()) return;
-  showEditDialog.value = false;
-  emit('update-todo', {
-    id: editingTodo.value.id,
-    title: editTitle.value.trim(),
-  });
-};
-
-const handleSaveDelete = () => {
-  if (!editingTodo.value) return;
-  showDeleteDialog.value = false;
-  emit('delete-todo', editingTodo.value.id);
-};
-
-const handlePriorityChange = (todo: TodoResponse) => {
-  emit('update-todo', {
-    id: todo.id,
+const handlePriorityChange = async (todo: TodoResponse) => {
+  await plannerStore.updateTodo(todo.id, {
     is_priority: !todo.is_priority,
   });
+};
+
+const handleSaveAdd = async () => {
+  if (!editTitle.value.trim()) return;
+  showAddDialog.value = false;
+  const createTodo: CreateTodoRequest = {
+    schedule_date: plannerStore.formattedApiDate,
+    title: editTitle.value.trim(),
+    is_priority: props.priority,
+  };
+  await plannerStore.createTodo(createTodo);
+};
+
+const handleSaveEdit = async () => {
+  if (!editingTodo.value || !editTitle.value.trim()) return;
+  showEditDialog.value = false;
+  await plannerStore.updateTodo(editingTodo.value.id, {
+    title: editTitle.value.trim(),
+  });
+};
+
+const handleSaveDelete = async () => {
+  if (!editingTodo.value) return;
+  showDeleteDialog.value = false;
+  await plannerStore.deleteTodo(editingTodo.value.id);
 };
 
 const showMenu = (event: Event, todoId: string) => {
@@ -173,7 +109,7 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
     },
   },
   {
-    label: todo.is_priority ? 'Deprioritize' : 'Top Priority',
+    label: todo.is_priority ? 'Deprioritize' : 'Prioritize',
     icon: todo.is_priority ? 'pi pi-arrow-down' : 'pi pi-arrow-up',
     command: () => {
       handlePriorityChange(todo);
@@ -191,13 +127,14 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
 </script>
 
 <template>
-  <div class="rounded-xl shadow dark:bg-surface-950 p-4">
-    <div class="flex items-center justify-between mb-6">
+  <div class="rounded-xl shadow dark:bg-surface-950 pt-3 px-4 pb-4">
+    <div class="flex items-center justify-between mb-2">
       <h2 class="text-lg font-bold">{{ title }}</h2>
       <Button
+        class="!p-1 !rounded"
         icon="pi pi-plus"
         rounded
-        text
+        variant="text"
         aria-label="Add Todo"
         label="Add"
         @click="handleOpenAddDialog"
@@ -206,34 +143,34 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
 
     <div class="space-y-2">
       <div
-        v-if="sortedTodos.length === 0 && !isLoading"
+        v-if="props.todos.length === 0 && !isLoading"
         class="text-center py-8 text-surface-500 dark:text-surface-400"
       >
         <p>No to-dos yet. Add one to get started!</p>
       </div>
 
       <div
-        v-for="todo in sortedTodos"
+        v-for="todo in props.todos"
         :key="todo.id"
         draggable="true"
-        @dragstart="handleDragStart(todo)"
-        @dragover="handleDragOver($event, todo)"
-        @dragend="handleDragEnd"
-        @drop="handleDrop($event, todo)"
+        @dragstart="plannerStore.handleDragStart(todo)"
+        @dragover="plannerStore.handleDragOver($event, todo)"
+        @dragend="plannerStore.handleDragEnd"
+        @drop="plannerStore.handleDrop($event, todo)"
         :class="[
           'flex items-center gap-3 p-3 rounded-md shadow dark:border-2 cursor-move transition-all',
-          draggedOverItem?.id === todo.id
+          plannerStore.draggedOverTodo?.id === todo.id
             ? 'border-violet-600 bg-violet-50 dark:bg-violet-900/20'
-            : draggedItem?.id === todo.id
+            : plannerStore.draggedTodo?.id === todo.id
               ? 'opacity-50 bg-surface-100 dark:bg-surface-800'
               : 'hover:bg-surface-50 dark:hover:bg-surface-800 border-surface-200 dark:border-surface-700',
-          updatingTodoId === todo.id && 'opacity-75 pointer-events-none',
+          plannerStore.updatingTodoId === todo.id && 'opacity-75 pointer-events-none',
         ]"
       >
         <Checkbox
           :modelValue="todo.is_completed"
           :binary="true"
-          :disabled="updatingTodoId === todo.id"
+          :disabled="plannerStore.updatingTodoId === todo.id"
           @update:modelValue="(checked) => handleCheckboxChange(todo, checked as boolean)"
           class="flex-shrink-0"
         />
