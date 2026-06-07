@@ -92,6 +92,18 @@ const formatTimeToString = (date: Date | null): string | undefined => {
   return `${hours}:${minutes}:${seconds}`;
 };
 
+const formatTo12Hour = (timeString: string) => {
+  const parts = timeString.split(':').map(Number);
+
+  const hours = parts[0] ?? 0;
+  const minutes = parts[1] ?? 0;
+
+  const period = hours >= 12 ? 'PM' : 'AM';
+  const displayHours = hours % 12 || 12;
+
+  return `${displayHours}:${String(minutes).padStart(2, '0')} ${period}`;
+};
+
 const handleSaveAdd = async () => {
   if (!editTitle.value.trim()) return;
 
@@ -185,7 +197,7 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
     <div class="space-y-2">
       <div
         v-if="props.todos.length === 0 && !isLoading"
-        class="text-center py-8 text-surface-500 dark:text-surface-400"
+        class="text-center text-surface-500 dark:text-surface-400"
       >
         <p
           :class="{
@@ -221,7 +233,7 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
             plannerStore.draggedTodo?.id === todo.id,
 
           // Default state for Priority list items
-          'border-transparent hover:border-secondary-300 bg-secondary-200 hover:bg-secondary-200/75 dark:border-surface-700 dark:hover:border-surface-700 dark:bg-transparent dark:hover:bg-surface-800':
+          'border-transparent hover:border-secondary-300 bg-secondary-200 hover:bg-secondary-200/75 dark:border-surface-700 dark:hover:border-surface-700 dark:bg-surface-900 dark:hover:bg-surface-800':
             todo.is_priority &&
             plannerStore.draggedOverTodo?.id !== todo.id &&
             plannerStore.draggedTodo?.id !== todo.id,
@@ -256,9 +268,9 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
 
         <div
           v-if="todo.schedule_time"
-          class="flex-shrink-0 bg-primary-100 dark:bg-primary-900 text-primary-800 dark:text-primary-100 text-xs font-medium px-2.5 py-0.5 rounded-full"
+          class="flex-shrink-0 border-1 border-tertiary-50 dark:border-primary-400 bg-tertiary-50 dark:bg-primary-400 text-surface-500 dark:text-black/75 text-xs font-medium px-2.5 py-0.5 rounded-full"
         >
-          {{ todo.schedule_time.substring(0, 5) }}
+          {{ formatTo12Hour(todo.schedule_time) }}
         </div>
 
         <div class="flex-shrink-0">

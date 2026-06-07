@@ -23,7 +23,7 @@ watch(
       class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-[minmax(450px,1fr)_2fr] gap-6 md:gap-10 lg:gap-14"
     >
       <DailySchedule />
-      <div class="grid gap-6 md:gap-8 lg:gap-8">
+      <div class="flex flex-col gap-6 md:gap-8 lg:gap-8">
         <DraggableTodoList
           title="Top Priorities"
           priority

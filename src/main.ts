@@ -42,6 +42,19 @@ const customTheme = definePreset(Aura, {
       900: '#6f4228',
       950: '#3e2315',
     },
+    tertiary: {
+      50: '#fbf5ff',
+      100: '#f3e9ff',
+      200: '#e8d4fe',
+      300: '#ddbafd',
+      400: '#c695f2',
+      500: '#a770e0',
+      600: '#884dcb',
+      700: '#6b37a8',
+      800: '#552d85',
+      900: '#46256c',
+      950: '#2d1845',
+    },
     colorScheme: {
       light: {
         text: {

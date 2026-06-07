@@ -19,6 +19,18 @@
   --color-secondary-800: #a3643b;
   --color-secondary-900: #8a5233;
   --color-secondary-950: #573722;
+
+  --color-tertiary-50: #fbf5ff;
+  --color-tertiary-100: #f3e9ff;
+  --color-tertiary-200: #e8d4fe;
+  --color-tertiary-300: #ddbafd;
+  --color-tertiary-400: #c695f2;
+  --color-tertiary-500: #a770e0;
+  --color-tertiary-600: #884dcb;
+  --color-tertiary-700: #6b37a8;
+  --color-tertiary-800: #552d85;
+  --color-tertiary-900: #46256c;
+  --color-tertiary-950: #2d1845;
 }
 
 @layer base {
