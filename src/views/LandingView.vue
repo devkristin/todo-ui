@@ -16,7 +16,7 @@ const router = useRouter();
         <span class="xl:block">Focused</span> Planning
       </h1>
       <p class="text-lg md:text-xl mb-8 dark:text-primary-300 mb-10">
-        Simplify your workflow and sharpen your focus with a personalized daily planner
+        Organize your day and sharpen your focus with a personalized daily planner
       </p>
       <div class="flex flex-col md:flex-row gap-4">
         <Button label="Sign In" size="medium" fluid @click="router.push('/login')" />
