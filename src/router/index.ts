@@ -4,6 +4,13 @@ import LandingView from '../views/LandingView.vue';
 
 const router = createRouter({
   history: createWebHistory(),
+  scrollBehavior(to, from, savedPosition) {
+    if (savedPosition) {
+      return savedPosition;
+    } else {
+      return { top: 0 };
+    }
+  },
   routes: [
     { path: '/', component: LandingView },
     { path: '/login', component: () => import('../views/LoginView.vue') },
