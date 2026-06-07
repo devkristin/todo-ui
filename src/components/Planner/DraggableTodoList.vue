@@ -6,6 +6,7 @@ import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
 import Menu from 'primevue/menu';
+import { DatePicker } from 'primevue';
 import type { MenuItem } from 'primevue/menuitem';
 import { usePlannerStore } from '@/stores/planner';
 
@@ -26,6 +27,8 @@ const plannerStore = usePlannerStore();
 const menuRefs = ref<Record<string, InstanceType<typeof Menu>>>({});
 const editingTodo = ref<TodoResponse | null>(null);
 const editTitle = ref('');
+const editDate = ref<Date | null>(new Date());
+const editTime = ref<Date | null>(null);
 const showEditDialog = ref(false);
 const showDeleteDialog = ref(false);
 const showAddDialog = ref(false);
@@ -42,12 +45,30 @@ const handleCheckboxChange = async (todo: TodoResponse, checked: boolean) => {
 const handleOpenAddDialog = () => {
   editingTodo.value = null;
   editTitle.value = '';
+  editDate.value = plannerStore.selectedDate || new Date();
+  editTime.value = null;
   showAddDialog.value = true;
 };
 
 const handleOpenEditDialog = (todo: TodoResponse) => {
   editingTodo.value = todo;
   editTitle.value = todo.title;
+  editDate.value = todo.schedule_date ? new Date(todo.schedule_date) : new Date();
+
+  if (todo.schedule_time) {
+    const parts = todo.schedule_time.split(':').map(Number);
+
+    const h = parts[0] ?? 0;
+    const m = parts[1] ?? 0;
+    const s = parts[2] ?? 0;
+
+    const d = new Date();
+    d.setHours(h, m, s);
+    editTime.value = d;
+  } else {
+    editTime.value = null;
+  }
+
   showEditDialog.value = true;
 };
 
@@ -63,22 +84,42 @@ const handlePriorityChange = async (todo: TodoResponse) => {
   });
 };
 
+const formatTimeToString = (date: Date | null): string | undefined => {
+  if (!date) return undefined;
+  const hours = String(date.getHours()).padStart(2, '0');
+  const minutes = String(date.getMinutes()).padStart(2, '0');
+  const seconds = String(date.getSeconds()).padStart(2, '0');
+  return `${hours}:${minutes}:${seconds}`;
+};
+
 const handleSaveAdd = async () => {
   if (!editTitle.value.trim()) return;
+
+  const dateString = editDate.value!.toISOString().split('T')[0];
+
   showAddDialog.value = false;
+
   const createTodo: CreateTodoRequest = {
-    schedule_date: plannerStore.formattedApiDate,
+    schedule_date: dateString!,
+    schedule_time: formatTimeToString(editTime.value),
     title: editTitle.value.trim(),
     is_priority: props.priority,
   };
+
   await plannerStore.createTodo(createTodo);
 };
 
 const handleSaveEdit = async () => {
   if (!editingTodo.value || !editTitle.value.trim()) return;
+
+  const dateString = editDate.value!.toISOString().split('T')[0];
+
   showEditDialog.value = false;
+
   await plannerStore.updateTodo(editingTodo.value.id, {
     title: editTitle.value.trim(),
+    schedule_date: dateString,
+    schedule_time: formatTimeToString(editTime.value),
   });
 };
 
@@ -242,7 +283,7 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
       class="w-full max-w-md"
     >
       <div class="space-y-4">
-        <div class="flex flex-col gap-2">
+        <div class="flex flex-col gap-4">
           <InputText
             id="title"
             aria-label="Title"
@@ -251,6 +292,14 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
             autofocus
             @keyup.enter="handleSaveAdd"
           />
+        </div>
+        <div class="flex flex-col gap-2 flex-1">
+          <label class="text-sm font-medium">Date</label>
+          <DatePicker v-model="editDate" dateFormat="yy-mm-dd" showIcon fluid />
+        </div>
+        <div class="flex flex-col gap-2 flex-1">
+          <label for="time" class="text-sm font-medium">Time</label>
+          <DatePicker inputId="time" v-model="editTime" timeOnly hourFormat="12" fluid />
         </div>
         <div class="flex gap-2 justify-end">
           <Button label="Cancel" severity="secondary" @click="showAddDialog = false" />
@@ -267,7 +316,7 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
       class="w-full max-w-md"
     >
       <div class="space-y-4">
-        <div class="flex flex-col gap-2">
+        <div class="flex flex-col gap-4">
           <InputText
             id="title"
             aria-label="Title"
@@ -276,6 +325,14 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
             autofocus
             @keyup.enter="handleSaveEdit"
           />
+        </div>
+        <div class="flex flex-col gap-2 flex-1">
+          <label for="date" class="text-sm font-medium">Date</label>
+          <DatePicker inputId="date" v-model="editDate" dateFormat="yy-mm-dd" showIcon fluid />
+        </div>
+        <div class="flex flex-col gap-2 flex-1">
+          <label for="time" class="text-sm font-medium">Time</label>
+          <DatePicker inputId="time" v-model="editTime" timeOnly hourFormat="12" fluid />
         </div>
         <div class="flex gap-2 justify-end">
           <Button label="Cancel" severity="secondary" @click="showEditDialog = false" />
