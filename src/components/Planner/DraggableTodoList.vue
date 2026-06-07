@@ -148,7 +148,7 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
       >
         <p
           :class="{
-            'rounded p-4 text-[var(--p-text-color)] dark:bg-transparent': true,
+            'rounded p-4 text-[var(--p-text-color)] dark:bg-transparent font-medium': true,
             'bg-secondary-200': props.priority,
             'bg-primary-200': !props.priority,
           }"
@@ -204,7 +204,7 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
 
         <span
           :class="[
-            'flex-1 text-sm transition-colors font-bold',
+            'flex-1 text-sm transition-colors font-semibold',
             todo.is_completed
               ? 'line-through text-surface-400 dark:text-surface-500'
               : '!text-[var(--p-text-color)]',
