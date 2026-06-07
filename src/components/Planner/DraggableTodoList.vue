@@ -299,22 +299,30 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
     >
       <div class="space-y-4">
         <div class="flex flex-col gap-4">
-          <InputText
-            id="title"
-            aria-label="Title"
-            v-model="editTitle"
-            placeholder="e.g. Go for a walk"
-            autofocus
-            @keyup.enter="handleSaveAdd"
-          />
+          <IftaLabel class="w-full">
+            <label for="title">Title</label>
+            <InputText
+              id="title"
+              aria-label="Title"
+              v-model="editTitle"
+              placeholder="e.g. Go for a walk"
+              autofocus
+              fluid
+              @keyup.enter="handleSaveAdd"
+            />
+          </IftaLabel>
         </div>
         <div class="flex flex-col gap-2 flex-1">
-          <label class="text-sm font-medium">Date</label>
-          <DatePicker v-model="editDate" dateFormat="yy-mm-dd" showIcon fluid />
+          <IftaLabel class="w-full">
+            <label for="date">Date</label>
+            <DatePicker inputId="date" v-model="editDate" dateFormat="yy-mm-dd" showIcon fluid />
+          </IftaLabel>
         </div>
         <div class="flex flex-col gap-2 flex-1">
-          <label for="time" class="text-sm font-medium">Time</label>
-          <DatePicker inputId="time" v-model="editTime" timeOnly hourFormat="12" fluid />
+          <IftaLabel class="w-full">
+            <label for="time">Time</label>
+            <DatePicker inputId="time" v-model="editTime" timeOnly hourFormat="12" fluid />
+          </IftaLabel>
         </div>
         <div class="flex gap-2 justify-end">
           <Button label="Cancel" severity="secondary" @click="showAddDialog = false" />
