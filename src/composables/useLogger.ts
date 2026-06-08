@@ -1,9 +1,5 @@
-import { healthApi } from '@/api/health';
-
-export function useHealthCheck() {
-  const init = async () => {
-    const healthCheck = await healthApi.getHealth();
-
+export function useLogger() {
+  const logSignature = () => {
     console.log(
       `%c 
                     _
@@ -15,11 +11,11 @@ export function useHealthCheck() {
     \\ |     \\ |/       | / \\ | /  \\|/    
     \\\\|//   \\\\|///   \\\\\|//  \\\|/// \\|///  
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+App dev by Kristin Vaughn
 `,
       'font-family:monospace',
     );
-    console.log(healthCheck);
   };
 
-  return { init };
+  return { logSignature };
 }
