@@ -2,6 +2,7 @@
 import { ref, watch, computed } from 'vue';
 import type { TodoResponse } from '@/types/todos';
 import Dialog from 'primevue/dialog';
+import { Form, FormField } from '@primevue/forms';
 import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import { DatePicker } from 'primevue';
@@ -88,24 +89,37 @@ const handleSave = () => {
 </script>
 
 <template>
-  <Dialog v-model:visible="visible" :header="headerText" modal class="w-full max-w-lg">
-    <div class="flex flex-col gap-4">
-      <InputText v-model="title" placeholder="Title" fluid autofocus />
-      <DatePicker v-model="date" placeholder="Date" dateFormat="yy-mm-dd" fluid required />
-      <DatePicker
-        v-model="time"
-        placeholder="Time"
-        timeOnly
-        hourFormat="12"
-        :stepMinute="30"
-        fluid
-        showClear
-        @focus="handleTimeFocus"
-      />
+  <Dialog v-model:visible="visible" :header="headerText" modal class="w-full max-w-sm">
+    <Form class="flex flex-col gap-4">
+      <FormField>
+        <InputText
+          v-model="title"
+          placeholder="Title"
+          id="title"
+          fluid
+          autofocus
+          class="!relative"
+        />
+      </FormField>
+      <FormField>
+        <DatePicker v-model="date" placeholder="Date" dateFormat="yy-mm-dd" fluid required />
+      </FormField>
+      <FormField>
+        <DatePicker
+          v-model="time"
+          placeholder="Time"
+          timeOnly
+          hourFormat="12"
+          :stepMinute="30"
+          fluid
+          showClear
+          @focus="handleTimeFocus"
+        />
+      </FormField>
       <div class="flex justify-end gap-2 pt-30">
         <Button label="Cancel" severity="secondary" @click="visible = false" />
         <Button label="Save" @click="handleSave" />
       </div>
-    </div>
+    </Form>
   </Dialog>
 </template>
