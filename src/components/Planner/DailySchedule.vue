@@ -10,8 +10,8 @@ const props = withDefaults(
     endHour?: number;
   }>(),
   {
-    startHour: 7,
-    endHour: 22,
+    startHour: 5,
+    endHour: 23,
   },
 );
 

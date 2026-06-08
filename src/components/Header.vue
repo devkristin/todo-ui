@@ -4,17 +4,14 @@ import ToggleSwitch from 'primevue/toggleswitch';
 import { RouterLink } from 'vue-router';
 import { ref } from 'vue';
 import { useAuthStore } from '../stores/auth';
+import { useSettingsStore } from '@/stores/settings.ts';
 import { useRouter } from 'vue-router';
 import LotusIcon from './icons/LotusIcon.vue';
 
-const isDark = ref(true);
 const authStore = useAuthStore();
+const settingsStore = useSettingsStore();
 const router = useRouter();
 const isHovered = ref(false);
-
-function toggleDarkMode() {
-  document.documentElement.classList.toggle('my-app-dark');
-}
 
 async function handleSignOut() {
   await authStore.signOut();
@@ -34,10 +31,10 @@ async function handleSignOut() {
       <span class="font-custom font-bold text-xl lowercase pr-4">Lotus List</span>
     </RouterLink>
     <span class="grow flex items-center justify-end gap-4">
-      <ToggleSwitch v-model="isDark" @change="toggleDarkMode">
+      <ToggleSwitch v-model="settingsStore.darkMode" @change="settingsStore.toggleDarkMode">
         <template #handle>
           <div class="rounded-full">
-            <i :class="[isDark ? 'pi-moon' : 'pi-sun', 'pi !text-xs']"></i>
+            <i :class="[settingsStore.darkMode ? 'pi-moon' : 'pi-sun', 'pi !text-xs']"></i>
           </div>
         </template>
       </ToggleSwitch>
