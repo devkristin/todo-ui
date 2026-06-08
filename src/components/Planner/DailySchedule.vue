@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue';
+import { computed } from 'vue';
 import { usePlannerStore } from '@/stores/planner';
 import Checkbox from 'primevue/checkbox';
 import { Button } from 'primevue';
@@ -16,23 +16,6 @@ const props = withDefaults(
 );
 
 const plannerStore = usePlannerStore();
-
-const isExpanded = ref(true);
-
-const toggleExpand = () => {
-  isExpanded.value = !isExpanded.value;
-};
-
-const evaluateExpansion = () => {
-  const isMobile = window.innerWidth < 768;
-  if (isMobile) {
-    isExpanded.value = false;
-  }
-};
-
-onMounted(() => {
-  evaluateExpansion();
-});
 
 const hours = computed(() => {
   const slots = [];
@@ -55,6 +38,10 @@ const handleCheckboxChange = async (todo: any, checked: boolean) => {
   await plannerStore.updateTodo(todo.id, { is_completed: checked });
   plannerStore.setUpdatingTodoId(null);
 };
+
+const handleImport = () => {
+  // TODO Import from Template
+};
 </script>
 
 <template>
@@ -62,14 +49,17 @@ const handleCheckboxChange = async (todo: any, checked: boolean) => {
     <div class="flex items-center justify-between">
       <h2 class="text-lg font-bold">Schedule</h2>
       <Button
-        :icon="isExpanded ? 'pi pi-chevron-up' : 'pi pi-chevron-down'"
-        text
-        size="small"
-        @click="toggleExpand"
+        class="!p-1 !rounded hidden"
+        icon="pi pi-file-import"
+        rounded
+        variant="text"
+        aria-label="Import"
+        label="Import"
+        @click="handleImport"
       />
     </div>
 
-    <div v-if="isExpanded" class="flex flex-col gap-1 transition-all">
+    <div class="flex flex-col gap-1 transition-all">
       <div
         v-for="hour in hours"
         :key="hour"
@@ -99,14 +89,6 @@ const handleCheckboxChange = async (todo: any, checked: boolean) => {
           </div>
         </div>
       </div>
-    </div>
-    <div
-      v-if="!isExpanded"
-      class="text-sm text-surface-400 italic cursor-pointer"
-      @click="toggleExpand"
-    >
-      {{ plannerStore.scheduledDailyTodos.length }} scheduled
-      {{ plannerStore.scheduledDailyTodos.length == 1 ? 'item' : 'items' }} hidden
     </div>
   </div>
 </template>
