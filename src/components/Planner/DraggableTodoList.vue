@@ -5,7 +5,6 @@ import Checkbox from 'primevue/checkbox';
 import Button from 'primevue/button';
 import Dialog from 'primevue/dialog';
 import InputText from 'primevue/inputtext';
-import IftaLabel from 'primevue/iftalabel';
 import Menu from 'primevue/menu';
 import { DatePicker } from 'primevue';
 import type { MenuItem } from 'primevue/menuitem';
@@ -314,42 +313,37 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
       :header="props.priority ? 'Add Priority Item' : 'Add To-Do Item'"
       :modal="true"
       :closable="true"
-      class="w-full max-w-lg h-full max-h-130"
+      class="w-full max-w-lg h-full max-h-135"
     >
-      <div class="h-full flex flex-col space-y-4">
-        <div class="flex flex-col gap-4">
-          <IftaLabel class="w-full">
-            <label for="title">Title</label>
-            <InputText
-              id="title"
-              aria-label="Title"
-              v-model="editTitle"
-              placeholder="e.g. Go for a walk"
-              autofocus
-              fluid
-              @keyup.enter="handleSaveAdd"
-            />
-          </IftaLabel>
+      <div class="h-full flex flex-col gap-6">
+        <div class="flex flex-col">
+          <label for="title" class="text-sm">Title</label>
+          <InputText
+            id="title"
+            aria-label="Title"
+            v-model="editTitle"
+            placeholder="e.g. Go for a walk"
+            autofocus
+            fluid
+            @keyup.enter="handleSaveAdd"
+          />
         </div>
-        <div class="flex flex-col gap-2">
-          <IftaLabel class="w-full">
-            <label for="date">Date</label>
-            <DatePicker inputId="date" v-model="editDate" dateFormat="yy-mm-dd" showIcon fluid />
-          </IftaLabel>
+        <div class="flex flex-col">
+          <label for="date" class="text-sm">Date</label>
+          <DatePicker inputId="date" v-model="editDate" dateFormat="yy-mm-dd" showIcon fluid />
         </div>
-        <div class="flex flex-col gap-2">
-          <IftaLabel class="w-full">
-            <label for="time">Time</label>
-            <DatePicker
-              inputId="time"
-              v-model="editTime"
-              timeOnly
-              hourFormat="12"
-              :stepMinute="30"
-              fluid
-              @focus="handleTimeFocus"
-            />
-          </IftaLabel>
+        <div class="flex flex-col">
+          <label for="time" class="text-sm">Time</label>
+          <DatePicker
+            inputId="time"
+            v-model="editTime"
+            timeOnly
+            hourFormat="12"
+            :stepMinute="30"
+            fluid
+            showClear
+            @focus="handleTimeFocus"
+          />
         </div>
         <div class="flex-1 flex items-end justify-end">
           <div class="flex gap-2 justify-end">
@@ -365,42 +359,37 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
       header="Edit"
       :modal="true"
       :closable="true"
-      class="w-full max-w-lg h-full max-h-130"
+      class="w-full max-w-lg h-full max-h-135"
     >
-      <div class="h-full flex flex-col space-y-4">
-        <div class="flex flex-col gap-4">
-          <IftaLabel class="w-full">
-            <label for="title">Title</label>
-            <InputText
-              id="title"
-              aria-label="Title"
-              v-model="editTitle"
-              placeholder="e.g. Go for a walk"
-              autofocus
-              fluid
-              @keyup.enter="handleSaveEdit"
-            />
-          </IftaLabel>
+      <div class="h-full flex flex-col gap-6">
+        <div class="flex flex-col">
+          <label for="title" class="text-sm">Title</label>
+          <InputText
+            id="title"
+            aria-label="Title"
+            v-model="editTitle"
+            placeholder="e.g. Go for a walk"
+            autofocus
+            fluid
+            @keyup.enter="handleSaveEdit"
+          />
         </div>
-        <div class="flex flex-col gap-2">
-          <IftaLabel class="w-full">
-            <label for="date">Date</label>
-            <DatePicker inputId="date" v-model="editDate" dateFormat="yy-mm-dd" showIcon fluid />
-          </IftaLabel>
+        <div class="flex flex-col">
+          <label for="date" class="text-sm">Date</label>
+          <DatePicker inputId="date" v-model="editDate" dateFormat="yy-mm-dd" showIcon fluid />
         </div>
-        <div class="flex flex-col gap-2">
-          <IftaLabel class="w-full">
-            <label for="time">Time</label>
-            <DatePicker
-              inputId="time"
-              v-model="editTime"
-              timeOnly
-              hourFormat="12"
-              :stepMinute="30"
-              fluid
-              @focus="handleTimeFocus"
-            />
-          </IftaLabel>
+        <div class="flex flex-col">
+          <label for="time" class="text-sm">Time</label>
+          <DatePicker
+            inputId="time"
+            v-model="editTime"
+            timeOnly
+            hourFormat="12"
+            :stepMinute="30"
+            fluid
+            showClear
+            @focus="handleTimeFocus"
+          />
         </div>
         <div class="flex-1 flex items-end justify-end">
           <div class="flex gap-2 justify-end">
