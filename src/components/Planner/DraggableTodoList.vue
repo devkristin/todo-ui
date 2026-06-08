@@ -313,7 +313,7 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
       :header="props.priority ? 'Add Priority Item' : 'Add To-Do Item'"
       :modal="true"
       :closable="true"
-      class="w-full max-w-lg h-full max-h-135"
+      class="w-full max-w-lg h-full lg:max-h-150"
     >
       <div class="h-full flex flex-col gap-6">
         <div class="flex flex-col">
@@ -359,7 +359,7 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
       header="Edit"
       :modal="true"
       :closable="true"
-      class="w-full max-w-lg h-full max-h-135"
+      class="w-full max-w-lg h-full lg:max-h-150"
     >
       <div class="h-full flex flex-col gap-6">
         <div class="flex flex-col">
