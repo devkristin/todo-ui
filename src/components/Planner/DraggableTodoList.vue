@@ -409,7 +409,7 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
     >
       <div class="space-y-4">
         <div class="flex flex-col gap-2">
-          <h2>Are you sure you want to delete "{{ editTitle }}" from your to-do list?</h2>
+          <h3>Are you sure you want to delete "{{ editTitle }}"?</h3>
         </div>
         <div class="flex gap-2 justify-end">
           <Button label="Cancel" severity="secondary" @click="showDeleteDialog = false" />
