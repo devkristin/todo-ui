@@ -311,12 +311,12 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
 
     <Dialog
       v-model:visible="showAddDialog"
-      :header="props.priority ? 'Add Priority' : 'Add To-Do'"
+      :header="props.priority ? 'Add Priority Item' : 'Add To-Do Item'"
       :modal="true"
       :closable="true"
-      class="w-full max-w-md"
+      class="w-full max-w-lg h-full max-h-130"
     >
-      <div class="space-y-4">
+      <div class="h-full flex flex-col space-y-4">
         <div class="flex flex-col gap-4">
           <IftaLabel class="w-full">
             <label for="title">Title</label>
@@ -331,13 +331,13 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
             />
           </IftaLabel>
         </div>
-        <div class="flex flex-col gap-2 flex-1">
+        <div class="flex flex-col gap-2">
           <IftaLabel class="w-full">
             <label for="date">Date</label>
             <DatePicker inputId="date" v-model="editDate" dateFormat="yy-mm-dd" showIcon fluid />
           </IftaLabel>
         </div>
-        <div class="flex flex-col gap-2 flex-1">
+        <div class="flex flex-col gap-2">
           <IftaLabel class="w-full">
             <label for="time">Time</label>
             <DatePicker
@@ -351,9 +351,11 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
             />
           </IftaLabel>
         </div>
-        <div class="flex gap-2 justify-end">
-          <Button label="Cancel" severity="secondary" @click="showAddDialog = false" />
-          <Button label="Save" :loading="isLoading" @click="handleSaveAdd" />
+        <div class="flex-1 flex items-end justify-end">
+          <div class="flex gap-2 justify-end">
+            <Button label="Cancel" severity="secondary" @click="showAddDialog = false" />
+            <Button label="Save" :loading="isLoading" @click="handleSaveAdd" />
+          </div>
         </div>
       </div>
     </Dialog>
@@ -363,9 +365,9 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
       header="Edit"
       :modal="true"
       :closable="true"
-      class="w-full max-w-md"
+      class="w-full max-w-lg h-full max-h-130"
     >
-      <div class="space-y-4">
+      <div class="h-full flex flex-col space-y-4">
         <div class="flex flex-col gap-4">
           <IftaLabel class="w-full">
             <label for="title">Title</label>
@@ -380,13 +382,13 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
             />
           </IftaLabel>
         </div>
-        <div class="flex flex-col gap-2 flex-1">
+        <div class="flex flex-col gap-2">
           <IftaLabel class="w-full">
             <label for="date">Date</label>
             <DatePicker inputId="date" v-model="editDate" dateFormat="yy-mm-dd" showIcon fluid />
           </IftaLabel>
         </div>
-        <div class="flex flex-col gap-2 flex-1">
+        <div class="flex flex-col gap-2">
           <IftaLabel class="w-full">
             <label for="time">Time</label>
             <DatePicker
@@ -400,9 +402,11 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
             />
           </IftaLabel>
         </div>
-        <div class="flex gap-2 justify-end">
-          <Button label="Cancel" severity="secondary" @click="showEditDialog = false" />
-          <Button label="Save" :loading="isLoading" @click="handleSaveEdit" />
+        <div class="flex-1 flex items-end justify-end">
+          <div class="flex gap-2 justify-end">
+            <Button label="Cancel" severity="secondary" @click="showEditDialog = false" />
+            <Button label="Save" :loading="isLoading" @click="handleSaveEdit" />
+          </div>
         </div>
       </div>
     </Dialog>
