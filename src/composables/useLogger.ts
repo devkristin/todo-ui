@@ -12,6 +12,7 @@ export function useLogger() {
     \\\\|//   \\\\|///   \\\\\|//  \\\|/// \\|///  
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 App dev by Kristin Vaughn
+https://github.com/devkristin
 `,
       'font-family:monospace',
     );

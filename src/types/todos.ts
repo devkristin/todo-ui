@@ -14,7 +14,7 @@ export interface TodoResponse {
 
 export interface CreateTodoRequest {
   schedule_date: string; // YYYY-MM-DD
-  schedule_time?: string; // HH:MM:SS
+  schedule_time?: string | null; // HH:MM:SS
   title: string;
   is_priority?: boolean;
   is_follow_up?: boolean;
@@ -24,7 +24,7 @@ export interface UpdateTodoRequest {
   todo: Partial<{
     title?: string;
     schedule_date?: string;
-    schedule_time?: string | null;
+    schedule_time: string | null;
     is_priority?: boolean;
     is_follow_up?: boolean;
     is_completed?: boolean;

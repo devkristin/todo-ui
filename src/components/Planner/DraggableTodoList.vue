@@ -3,10 +3,9 @@ import { ref } from 'vue';
 import type { CreateTodoRequest, TodoResponse } from '@/types/todos';
 import Checkbox from 'primevue/checkbox';
 import Button from 'primevue/button';
+import AddEditTodoDialog from './AddEditTodoDialog.vue';
 import Dialog from 'primevue/dialog';
-import InputText from 'primevue/inputtext';
 import Menu from 'primevue/menu';
-import { DatePicker } from 'primevue';
 import type { MenuItem } from 'primevue/menuitem';
 import { usePlannerStore } from '@/stores/planner';
 
@@ -25,13 +24,11 @@ const props = withDefaults(defineProps<Props>(), {
 const plannerStore = usePlannerStore();
 
 const menuRefs = ref<Record<string, InstanceType<typeof Menu>>>({});
-const editingTodo = ref<TodoResponse | null>(null);
-const editTitle = ref('');
-const editDate = ref<Date | null>(new Date());
-const editTime = ref<Date | null>(null);
-const showEditDialog = ref(false);
+const showAddEditDialog = ref(false);
+const dialogMode = ref<'add' | 'edit'>('add');
+const activeTodo = ref<TodoResponse | null>(null);
+
 const showDeleteDialog = ref(false);
-const showAddDialog = ref(false);
 
 const handleCheckboxChange = async (todo: TodoResponse, checked: boolean) => {
   try {
@@ -43,38 +40,19 @@ const handleCheckboxChange = async (todo: TodoResponse, checked: boolean) => {
 };
 
 const handleOpenAddDialog = () => {
-  editingTodo.value = null;
-  editTitle.value = '';
-  editDate.value = plannerStore.selectedDate || new Date();
-  editTime.value = null;
-  showAddDialog.value = true;
+  dialogMode.value = 'add';
+  activeTodo.value = null;
+  showAddEditDialog.value = true;
 };
 
 const handleOpenEditDialog = (todo: TodoResponse) => {
-  editingTodo.value = todo;
-  editTitle.value = todo.title;
-  editDate.value = todo.schedule_date ? new Date(todo.schedule_date) : new Date();
-
-  if (todo.schedule_time) {
-    const parts = todo.schedule_time.split(':').map(Number);
-
-    const h = parts[0] ?? 0;
-    const m = parts[1] ?? 0;
-    const s = parts[2] ?? 0;
-
-    const d = new Date();
-    d.setHours(h, m, s);
-    editTime.value = d;
-  } else {
-    editTime.value = null;
-  }
-
-  showEditDialog.value = true;
+  dialogMode.value = 'edit';
+  activeTodo.value = todo;
+  showAddEditDialog.value = true;
 };
 
 const handleOpenDeleteDialog = (todo: TodoResponse) => {
-  editingTodo.value = todo;
-  editTitle.value = todo.title;
+  activeTodo.value = todo;
   showDeleteDialog.value = true;
 };
 
@@ -84,8 +62,8 @@ const handlePriorityChange = async (todo: TodoResponse) => {
   });
 };
 
-const formatTimeToString = (date: Date | null): string | undefined => {
-  if (!date) return undefined;
+const formatTimeToString = (date: Date | null): string | null => {
+  if (!date) return null;
   const hours = String(date.getHours()).padStart(2, '0');
   const minutes = String(date.getMinutes()).padStart(2, '0');
   const seconds = String(date.getSeconds()).padStart(2, '0');
@@ -104,60 +82,32 @@ const formatTo12Hour = (timeString: string) => {
   return `${displayHours}:${String(minutes).padStart(2, '0')} ${period}`;
 };
 
-const getRoundedDate = (date: Date = new Date()): Date => {
-  const rounded = new Date(date);
-  const minutes = rounded.getMinutes();
-  const remainder = minutes % 30;
+const handleSave = async (payload: { title: string; date: Date; time: Date | null }) => {
+  const dateString = payload.date!.toISOString().split('T')[0];
 
-  if (remainder !== 0) {
-    rounded.setMinutes(minutes + (30 - remainder));
+  if (dialogMode.value === 'add') {
+    const createTodo: CreateTodoRequest = {
+      schedule_date: dateString!,
+      schedule_time: formatTimeToString(payload.time),
+      title: payload.title.trim(),
+      is_priority: props.priority,
+    };
+    await plannerStore.createTodo(createTodo);
+  } else if (activeTodo.value) {
+    await plannerStore.updateTodo(activeTodo.value.id, {
+      title: payload.title.trim(),
+      schedule_date: dateString,
+      schedule_time: formatTimeToString(payload.time),
+    });
   }
-  rounded.setSeconds(0);
-  rounded.setMilliseconds(0);
-  return rounded;
-};
-
-const handleTimeFocus = () => {
-  if (!editTime.value) {
-    editTime.value = getRoundedDate();
-  }
-};
-
-const handleSaveAdd = async () => {
-  if (!editTitle.value.trim()) return;
-
-  const dateString = editDate.value!.toISOString().split('T')[0];
-
-  showAddDialog.value = false;
-
-  const createTodo: CreateTodoRequest = {
-    schedule_date: dateString!,
-    schedule_time: formatTimeToString(editTime.value),
-    title: editTitle.value.trim(),
-    is_priority: props.priority,
-  };
-
-  await plannerStore.createTodo(createTodo);
-};
-
-const handleSaveEdit = async () => {
-  if (!editingTodo.value || !editTitle.value.trim()) return;
-
-  const dateString = editDate.value!.toISOString().split('T')[0];
-
-  showEditDialog.value = false;
-
-  await plannerStore.updateTodo(editingTodo.value.id, {
-    title: editTitle.value.trim(),
-    schedule_date: dateString,
-    schedule_time: formatTimeToString(editTime.value),
-  });
+  activeTodo.value = null;
 };
 
 const handleSaveDelete = async () => {
-  if (!editingTodo.value) return;
+  if (!activeTodo.value) return;
   showDeleteDialog.value = false;
-  await plannerStore.deleteTodo(editingTodo.value.id);
+  await plannerStore.deleteTodo(activeTodo.value.id);
+  activeTodo.value = null;
 };
 
 const showMenu = (event: Event, todoId: string) => {
@@ -308,97 +258,13 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
       </div>
     </div>
 
-    <Dialog
-      v-model:visible="showAddDialog"
-      :header="props.priority ? 'Add Priority Item' : 'Add To-Do Item'"
-      :modal="true"
-      :closable="true"
-      class="w-full max-w-lg h-full lg:max-h-150"
-    >
-      <div class="h-full flex flex-col gap-6">
-        <div class="flex flex-col">
-          <label for="title" class="text-sm">Title</label>
-          <InputText
-            id="title"
-            aria-label="Title"
-            v-model="editTitle"
-            placeholder="e.g. Go for a walk"
-            autofocus
-            fluid
-            @keyup.enter="handleSaveAdd"
-          />
-        </div>
-        <div class="flex flex-col">
-          <label for="date" class="text-sm">Date</label>
-          <DatePicker inputId="date" v-model="editDate" dateFormat="yy-mm-dd" showIcon fluid />
-        </div>
-        <div class="flex flex-col">
-          <label for="time" class="text-sm">Time</label>
-          <DatePicker
-            inputId="time"
-            v-model="editTime"
-            timeOnly
-            hourFormat="12"
-            :stepMinute="30"
-            fluid
-            showClear
-            @focus="handleTimeFocus"
-          />
-        </div>
-        <div class="flex-1 flex items-end justify-end">
-          <div class="flex gap-2 justify-end">
-            <Button label="Cancel" severity="secondary" @click="showAddDialog = false" />
-            <Button label="Save" :loading="isLoading" @click="handleSaveAdd" />
-          </div>
-        </div>
-      </div>
-    </Dialog>
-
-    <Dialog
-      v-model:visible="showEditDialog"
-      header="Edit"
-      :modal="true"
-      :closable="true"
-      class="w-full max-w-lg h-full lg:max-h-150"
-    >
-      <div class="h-full flex flex-col gap-6">
-        <div class="flex flex-col">
-          <label for="title" class="text-sm">Title</label>
-          <InputText
-            id="title"
-            aria-label="Title"
-            v-model="editTitle"
-            placeholder="e.g. Go for a walk"
-            autofocus
-            fluid
-            @keyup.enter="handleSaveEdit"
-          />
-        </div>
-        <div class="flex flex-col">
-          <label for="date" class="text-sm">Date</label>
-          <DatePicker inputId="date" v-model="editDate" dateFormat="yy-mm-dd" showIcon fluid />
-        </div>
-        <div class="flex flex-col">
-          <label for="time" class="text-sm">Time</label>
-          <DatePicker
-            inputId="time"
-            v-model="editTime"
-            timeOnly
-            hourFormat="12"
-            :stepMinute="30"
-            fluid
-            showClear
-            @focus="handleTimeFocus"
-          />
-        </div>
-        <div class="flex-1 flex items-end justify-end">
-          <div class="flex gap-2 justify-end">
-            <Button label="Cancel" severity="secondary" @click="showEditDialog = false" />
-            <Button label="Save" :loading="isLoading" @click="handleSaveEdit" />
-          </div>
-        </div>
-      </div>
-    </Dialog>
+    <AddEditTodoDialog
+      v-model:visible="showAddEditDialog"
+      :mode="dialogMode"
+      :todo="activeTodo"
+      :priority="props.priority"
+      @save="handleSave"
+    />
 
     <Dialog
       v-model:visible="showDeleteDialog"
@@ -409,7 +275,7 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
     >
       <div class="space-y-4">
         <div class="flex flex-col gap-2">
-          <h3>Are you sure you want to delete "{{ editTitle }}"?</h3>
+          <h3>Are you sure you want to delete "{{ activeTodo?.title }}"?</h3>
         </div>
         <div class="flex gap-2 justify-end">
           <Button label="Cancel" severity="secondary" @click="showDeleteDialog = false" />
