@@ -19,7 +19,7 @@ const goToNextDay = () => {
 </script>
 
 <template>
-  <div class="flex justify-center">
+  <div class="flex justify-center relative">
     <Button
       icon="pi pi-chevron-left"
       @click="goToPreviousDay"

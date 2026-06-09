@@ -54,7 +54,7 @@ const handleApply = () => {
         rounded
         variant="text"
         aria-label="Apply"
-        label="Apply Routine"
+        label="Apply"
         @click="handleApply"
       />
     </div>
