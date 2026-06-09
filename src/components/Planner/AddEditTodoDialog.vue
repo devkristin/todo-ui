@@ -116,7 +116,7 @@ const handleSave = () => {
           @focus="handleTimeFocus"
         />
       </FormField>
-      <div class="flex justify-end gap-2 pt-30">
+      <div class="flex justify-end gap-2 pt-34">
         <Button label="Cancel" severity="secondary" @click="visible = false" />
         <Button label="Save" @click="handleSave" />
       </div>

@@ -239,7 +239,7 @@ const menuItems = (todo: TodoResponse): MenuItem[] => [
 
         <div
           v-if="todo.schedule_time"
-          class="flex-shrink-0 border-1 border-tertiary-50 dark:border-primary-400 bg-tertiary-50 dark:bg-primary-400 text-surface-500 dark:text-black/75 text-xs font-medium px-2.5 py-0.5 rounded-full"
+          class="flex-shrink-0 border-1 border-transparent bg-white/75 dark:bg-primary-400 text-surface-500 dark:text-black/75 text-xs font-medium px-2.5 py-0.5 rounded-full"
         >
           {{ formatTo12Hour(todo.schedule_time) }}
         </div>

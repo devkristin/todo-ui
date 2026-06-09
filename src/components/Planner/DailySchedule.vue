@@ -39,8 +39,8 @@ const handleCheckboxChange = async (todo: any, checked: boolean) => {
   plannerStore.setUpdatingTodoId(null);
 };
 
-const handleImport = () => {
-  // TODO Import from Template
+const handleApply = () => {
+  // TODO Routines
 };
 </script>
 
@@ -49,13 +49,13 @@ const handleImport = () => {
     <div class="flex items-center justify-between">
       <h2 class="text-lg font-bold">Schedule</h2>
       <Button
-        class="!p-1 !rounded hidden"
+        class="!p-1 !rounded"
         icon="pi pi-file-import"
         rounded
         variant="text"
-        aria-label="Import"
-        label="Import"
-        @click="handleImport"
+        aria-label="Apply"
+        label="Apply Routine"
+        @click="handleApply"
       />
     </div>
 
