@@ -32,7 +32,7 @@ const goToNextDay = () => {
         v-model="plannerStore.selectedDate"
         dateFormat="DD, MM dd, yy"
         :manualInput="false"
-        inputClass="text-center w-full font-bold !text-[var(--p-text-color)]"
+        inputClass="text-center w-full font-bold !text-[var(--p-text-color)] cursor-pointer"
         panelClass="!left-1/2 !-translate-x-1/2"
         fluid
       />

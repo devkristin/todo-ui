@@ -83,11 +83,9 @@ const formatTo12Hour = (timeString: string) => {
 };
 
 const handleSave = async (payload: { title: string; date: Date; time: Date | null }) => {
-  const dateString = payload.date!.toISOString().split('T')[0];
-
   if (dialogMode.value === 'add') {
     const createTodo: CreateTodoRequest = {
-      schedule_date: dateString!,
+      schedule_date: plannerStore.formatDateToApi(payload.date),
       schedule_time: formatTimeToString(payload.time),
       title: payload.title.trim(),
       is_priority: props.priority,
@@ -96,7 +94,7 @@ const handleSave = async (payload: { title: string; date: Date; time: Date | nul
   } else if (activeTodo.value) {
     await plannerStore.updateTodo(activeTodo.value.id, {
       title: payload.title.trim(),
-      schedule_date: dateString,
+      schedule_date: plannerStore.formatDateToApi(payload.date),
       schedule_time: formatTimeToString(payload.time),
     });
   }

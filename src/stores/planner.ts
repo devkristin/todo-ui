@@ -17,13 +17,15 @@ export const usePlannerStore = defineStore('planner', () => {
   const draggedOverTodo = ref<TodoResponse | null>(null);
   const updatingTodoId = ref<string | null>(null);
 
-  const formattedApiDate = computed(() => {
-    const d = selectedDate.value;
-    const year = d.getFullYear();
-    const month = String(d.getMonth() + 1).padStart(2, '0');
-    const day = String(d.getDate()).padStart(2, '0');
-
+  const formatDateToApi = (date: Date): string => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
+  };
+
+  const formattedApiDate = computed(() => {
+    return formatDateToApi(selectedDate.value);
   });
 
   const setUpdatingTodoId = (id: string | null) => {
@@ -266,6 +268,7 @@ export const usePlannerStore = defineStore('planner', () => {
     dailyTodos,
     topPriorityTodos,
     scheduledDailyTodos,
+    formatDateToApi,
     setUpdatingTodoId,
     setDraggedTodo,
     handleDragStart,
