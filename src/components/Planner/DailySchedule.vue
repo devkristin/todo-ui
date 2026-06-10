@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 import { usePlannerStore } from '@/stores/planner';
 import Checkbox from 'primevue/checkbox';
-import { Button } from 'primevue';
+import Button from 'primevue/button';
+import Menu from 'primevue/menu';
 
 const props = withDefaults(
   defineProps<{
@@ -39,8 +40,35 @@ const handleCheckboxChange = async (todo: any, checked: boolean) => {
   plannerStore.setUpdatingTodoId(null);
 };
 
-const handleApply = () => {
-  // TODO Routines
+const menu = ref();
+
+const showMenu = (event: Event) => {
+  menu.value.toggle(event);
+};
+
+const menuItems = ref([
+  {
+    label: 'Import a Template',
+    icon: 'pi pi-file-import',
+    command: () => {
+      handleImport();
+    },
+  },
+  {
+    label: 'Manage Templates',
+    icon: 'pi pi-file-edit',
+    command: () => {
+      handleManage();
+    },
+  },
+]);
+
+const handleImport = () => {
+  // TODO Import from library
+};
+
+const handleManage = () => {
+  // TODO Manage in library
 };
 </script>
 
@@ -48,15 +76,12 @@ const handleApply = () => {
   <div class="rounded-xl shadow dark:bg-surface-950 p-4">
     <div class="flex items-center justify-between">
       <h2 class="text-lg font-bold">Schedule</h2>
-      <Button
-        class="!p-1 !rounded"
-        icon="pi pi-file-import"
-        rounded
-        variant="text"
-        aria-label="Apply"
-        label="Apply"
-        @click="handleApply"
-      />
+      <Button class="!p-1 !rounded" rounded variant="text" @click="(event) => showMenu(event)">
+        <i class="pi pi-copy"></i>
+        <span class="font-medium">Templates</span>
+        <i class="pi pi-chevron-down text-[.7rem] opacity-60"></i>
+      </Button>
+      <Menu ref="menu" id="overlay_menu" :model="menuItems" :popup="true" />
     </div>
 
     <div class="flex flex-col gap-1 transition-all">
