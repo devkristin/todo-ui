@@ -90,9 +90,15 @@ const handleLogin = async () => {
       </template>
 
       <template #footer>
-        <div>
+        <div class="py-2">
           Don't have an account?
-          <Button variant="link" as="router-link" label="Register here" to="register" />
+          <Button
+            variant="link"
+            as="router-link"
+            label="Register here"
+            to="register"
+            class="!p-0"
+          />
         </div>
       </template>
     </Card>

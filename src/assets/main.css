@@ -5,6 +5,8 @@
 @custom-variant dark (&:where(.my-app-dark, .my-app-dark *));
 
 @theme {
+  --breakpoint-xs: 400px;
+
   --font-custom: 'Libre Baskerville', serif;
   --font-body: 'Bricolage Grotesque', sans-serif;
 

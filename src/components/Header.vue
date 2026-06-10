@@ -1,51 +1,43 @@
 <script setup lang="ts">
 import Button from 'primevue/button';
-import ToggleSwitch from 'primevue/toggleswitch';
-import { RouterLink } from 'vue-router';
 import { ref } from 'vue';
-import { useAuthStore } from '../stores/auth';
+import NavDrawer from './NavDrawer.vue';
+import Logo from './Logo.vue';
+import ToggleSwitch from 'primevue/toggleswitch';
+import AuthButtons from './AuthButtons.vue';
 import { useSettingsStore } from '@/stores/settings.ts';
-import { useRouter } from 'vue-router';
-import LotusIcon from './icons/LotusIcon.vue';
 
-const authStore = useAuthStore();
 const settingsStore = useSettingsStore();
-const router = useRouter();
-const isHovered = ref(false);
-
-async function handleSignOut() {
-  await authStore.signOut();
-  router.push('/');
-}
+const navOpen = ref(false);
 </script>
 
 <template>
-  <header class="p-4 flex flex-wrap items-center justify-center gap-2">
-    <RouterLink
-      to="/"
-      class="!text-current flex items-center -ml-4"
-      @mouseenter="isHovered = true"
-      @mouseleave="isHovered = false"
-    >
-      <LotusIcon :isHovered="isHovered" class="max-w-20 sm:max-w-25 md:max-w-30 lg:max-w-35" />
-      <span class="font-custom font-bold text-xl lowercase pr-4">Lotus List</span>
-    </RouterLink>
-    <span class="grow flex items-center justify-end gap-4">
-      <ToggleSwitch v-model="settingsStore.darkMode" @change="settingsStore.toggleDarkMode">
+  <NavDrawer v-model:visible="navOpen" />
+  <header class="p-4 flex items-center justify-between gap-2">
+    <div class="flex items-center">
+      <Button
+        icon="pi pi-bars"
+        aria-label="Navigation Menu"
+        severity="secondary"
+        variant="outlined"
+        class="mr-1 md:mr-2"
+        @click="navOpen = true"
+      />
+      <Logo />
+    </div>
+    <div class="flex items-center gap-4">
+      <ToggleSwitch
+        v-model="settingsStore.darkMode"
+        class="ml-2"
+        @change="settingsStore.toggleDarkMode"
+      >
         <template #handle>
           <div class="rounded-full">
             <i :class="[settingsStore.darkMode ? 'pi-moon' : 'pi-sun', 'pi !text-xs']"></i>
           </div>
         </template>
       </ToggleSwitch>
-      <Button
-        v-if="authStore.isAuthenticated"
-        label="Sign Out"
-        severity="secondary"
-        variant="outlined"
-        size="small"
-        @click="handleSignOut"
-      />
-    </span>
+      <AuthButtons class="hidden sm:flex" />
+    </div>
   </header>
 </template>

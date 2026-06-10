@@ -119,9 +119,9 @@ const handleRegister = async () => {
       </template>
 
       <template #footer>
-        <div>
+        <div class="py-2">
           Already have an account?
-          <Button variant="link" as="router-link" label="Sign in here" to="/login" />
+          <Button variant="link" as="router-link" label="Sign in here" to="/login" class="!p-0" />
         </div>
       </template>
     </Card>
