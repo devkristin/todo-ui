@@ -99,6 +99,7 @@ const handleSave = () => {
           fluid
           autofocus
           class="!relative"
+          @keyup.enter="handleSave"
         />
       </FormField>
       <FormField>
