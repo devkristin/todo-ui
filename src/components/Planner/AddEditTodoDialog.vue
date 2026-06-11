@@ -32,10 +32,10 @@ const headerText = computed(() => {
 const getRoundedDate = (date: Date = new Date()): Date => {
   const rounded = new Date(date);
   const minutes = rounded.getMinutes();
-  const remainder = minutes % 30;
+  const remainder = minutes % 15;
 
   if (remainder !== 0) {
-    rounded.setMinutes(minutes + (30 - remainder));
+    rounded.setMinutes(minutes + (15 - remainder));
   }
   rounded.setSeconds(0);
   rounded.setMilliseconds(0);
@@ -111,7 +111,7 @@ const handleSave = () => {
           placeholder="Time"
           timeOnly
           hourFormat="12"
-          :stepMinute="30"
+          :stepMinute="15"
           fluid
           showClear
           @focus="handleTimeFocus"
