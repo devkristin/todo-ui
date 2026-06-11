@@ -20,6 +20,11 @@ const router = createRouter({
       component: () => import('../views/PlannerView.vue'),
       meta: { requiresAuth: true },
     },
+    {
+      path: '/templates',
+      component: () => import('../views/TemplatesView.vue'),
+      meta: { requiresAuth: true },
+    },
     { path: '/:pathMatch(.*)*', redirect: '/' },
   ],
 });
