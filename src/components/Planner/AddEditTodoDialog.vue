@@ -7,6 +7,7 @@ import InputText from 'primevue/inputtext';
 import Button from 'primevue/button';
 import { DatePicker } from 'primevue';
 import { usePlannerStore } from '@/stores/planner';
+import { parseDbTimeToDate, getRoundedDate } from '@/utils/time';
 
 const props = defineProps<{
   todo?: TodoResponse | null;
@@ -29,19 +30,6 @@ const headerText = computed(() => {
   return props.mode == 'add' ? addText : editText;
 });
 
-const getRoundedDate = (date: Date = new Date()): Date => {
-  const rounded = new Date(date);
-  const minutes = rounded.getMinutes();
-  const remainder = minutes % 15;
-
-  if (remainder !== 0) {
-    rounded.setMinutes(minutes + (15 - remainder));
-  }
-  rounded.setSeconds(0);
-  rounded.setMilliseconds(0);
-  return rounded;
-};
-
 const handleTimeFocus = () => {
   if (!time.value) {
     time.value = getRoundedDate();
@@ -55,26 +43,11 @@ const getDate = (todo: TodoResponse | null) => {
   return plannerStore.selectedDate || new Date();
 };
 
-const getTime = (todo: TodoResponse | null) => {
-  if (todo?.schedule_time) {
-    const parts = todo.schedule_time.split(':').map(Number);
-
-    const h = parts[0] ?? 0;
-    const m = parts[1] ?? 0;
-    const s = parts[2] ?? 0;
-
-    const d = new Date();
-    d.setHours(h, m, s);
-    return d;
-  }
-  return null;
-};
-
 watch(visible, (newVal) => {
   if (newVal) {
     title.value = props.todo?.title ?? '';
     date.value = getDate(props.todo ?? null);
-    time.value = getTime(props.todo ?? null);
+    time.value = parseDbTimeToDate(props.todo?.schedule_time);
   }
 });
 

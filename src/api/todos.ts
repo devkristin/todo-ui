@@ -1,5 +1,5 @@
 import client from './client';
-import type { TodoResponse, CreateTodoRequest, UpdateTodoRequest } from '../types/todos';
+import type { TodoResponse, CreateTodoRequest, UpdateTodoRequest } from '@/types/todos';
 
 const TODOS_BASE_URL = '/todos';
 
