@@ -4,7 +4,7 @@ import { ref, onMounted, onUnmounted } from 'vue';
 import Button from 'primevue/button';
 
 const router = useRouter();
-const wordsList = ['Plan', 'Create', 'Motivate', 'Automate', 'Celebrate'];
+const wordsList = ['Coordinate', 'Motivate', 'Automate', 'Regulate', 'Celebrate'];
 const wordIndex = ref(0);
 const word = ref(wordsList[0]);
 
@@ -42,7 +42,8 @@ onUnmounted(() => {
         </Transition>
       </h1>
       <p class="text-lg md:text-xl mb-8 dark:text-primary-300 mb-10">
-        An all-in-one productivity suite to organize your life and achieve your goals.
+        An all-in-one productivity toolkit designed to help organize your life and improve your
+        overall health and wellness.
       </p>
       <div class="flex flex-col md:flex-row gap-4">
         <Button label="Sign In" size="medium" fluid @click="router.push('/login')" />

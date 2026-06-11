@@ -1,8 +1,4 @@
-<script setup lang="ts">
-import { useRouter } from 'vue-router';
-import { ref, onMounted, onUnmounted } from 'vue';
-import Button from 'primevue/button';
-</script>
+<script setup lang="ts"></script>
 
 <template>
   <div class="grow w-full p-4">
