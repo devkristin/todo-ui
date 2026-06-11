@@ -1,6 +1,6 @@
 # Todo List UI
 
-Frontend for the custom Daily Planner and Todo List application.
+Frontend for Lotus List, a custom Daily Planner and Todo List application.
 
 Built with Vue 3 (Composition API), TypeScript, Vite, Pinia, PrimeVue, and Tailwind CSS.
 
