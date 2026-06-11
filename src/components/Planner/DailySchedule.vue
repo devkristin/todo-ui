@@ -9,28 +9,70 @@ const props = withDefaults(
   defineProps<{
     startHour?: number;
     endHour?: number;
+    increment?: number;
   }>(),
   {
     startHour: 5,
     endHour: 23,
+    increment: 30,
   },
 );
 
 const plannerStore = usePlannerStore();
 
-const hours = computed(() => {
-  const slots = [];
-  for (let i = props.startHour; i <= props.endHour; i++) {
-    slots.push(i);
+interface TimeSlot {
+  label: string;
+  hour: number;
+  minute: number;
+  rawTimeStr: string;
+}
+
+// Generate slots based on start/end hours and the increment value
+const timeSlots = computed<TimeSlot[]>(() => {
+  const slots: TimeSlot[] = [];
+  const startMinutes = props.startHour * 60;
+  const endMinutes = props.endHour * 60;
+
+  for (let minutes = startMinutes; minutes <= endMinutes; minutes += props.increment) {
+    const hour = Math.floor(minutes / 60);
+    const minute = minutes % 60;
+
+    // Formatting 12-hour display string (e.g., "5:30 AM", "12:00 PM")
+    const displayHour = hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
+    const ampm = hour >= 12 ? ' PM' : ' AM';
+    const displayMinute = minute === 0 ? '00' : minute.toString().padStart(2, '0');
+    const label = `${displayHour}:${displayMinute}${ampm}`;
+
+    // Used to match against todo.schedule_time formats (e.g., "05:30:00" or "17:00")
+    const rawTimeStr = `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}`;
+
+    slots.push({ label, hour, minute, rawTimeStr });
   }
   return slots;
 });
 
-const getTodosForHour = (hour: number) => {
+// Filters todos that fall within the current slot block up until the next slot
+const getTodosForSlot = (currentSlot: TimeSlot, index: number) => {
   return plannerStore.scheduledDailyTodos.filter((todo) => {
     if (!todo.schedule_time) return false;
-    const todoHour = Number(todo.schedule_time.split(':')[0]);
-    return todoHour === hour;
+
+    // Splits "HH:MM:SS" or "HH:MM" down to numbers
+    const [todoHour, todoMinute] = todo.schedule_time.split(':').map(Number);
+    if (!todoHour || !todoMinute) return false;
+    const todoTotalMinutes = todoHour * 60 + todoMinute;
+
+    const currentSlotMinutes = currentSlot.hour * 60 + currentSlot.minute;
+    const nextSlot = timeSlots.value[index + 1];
+
+    if (nextSlot) {
+      const nextSlotMinutes = nextSlot.hour * 60 + nextSlot.minute;
+      // Todo belongs here if it falls on or after this slot, but strictly before the next
+      return todoTotalMinutes >= currentSlotMinutes && todoTotalMinutes < nextSlotMinutes;
+    } else {
+      // For the final slot block, handle everything up to the absolute end of that block
+      const endOfBlockMinutes = currentSlotMinutes + props.increment;
+      return todoTotalMinutes >= currentSlotMinutes && todoTotalMinutes < endOfBlockMinutes;
+    }
   });
 };
 
@@ -84,19 +126,19 @@ const handleManage = () => {
       <Menu ref="menu" id="overlay_menu" :model="menuItems" :popup="true" />
     </div>
 
-    <div class="flex flex-col gap-1 transition-all">
+    <div class="flex flex-col transition-all mt-4">
       <div
-        v-for="hour in hours"
-        :key="hour"
+        v-for="(slot, index) in timeSlots"
+        :key="slot.rawTimeStr"
         class="flex items-start min-h-[3rem] border-b border-surface-100 dark:border-surface-800 py-2"
       >
-        <div class="w-16 text-xs font-medium text-surface-500 pt-1">
-          {{ hour > 12 ? hour - 12 : hour }}{{ hour >= 12 ? ' PM' : ' AM' }}
+        <div class="w-20 text-xs font-medium text-surface-500 pt-1">
+          {{ slot.label }}
         </div>
 
         <div class="flex-1 flex flex-col gap-2">
           <div
-            v-for="todo in getTodosForHour(hour)"
+            v-for="todo in getTodosForSlot(slot, index)"
             :key="todo.id"
             class="flex items-center gap-3 bg-tertiary-100 dark:bg-surface-900 p-2 rounded-md border border-transparent dark:border-surface-700"
           >
