@@ -51,25 +51,32 @@ const timeSlots = computed<TimeSlot[]>(() => {
   return slots;
 });
 
-// Filters todos that fall within the current slot block up until the next slot
+// Filters todos that fall within the current slot block
 const getTodosForSlot = (currentSlot: TimeSlot, index: number) => {
   return plannerStore.scheduledDailyTodos.filter((todo) => {
     if (!todo.schedule_time) return false;
 
-    // Splits "HH:MM:SS" or "HH:MM" down to numbers
-    const [todoHour, todoMinute] = todo.schedule_time.split(':').map(Number);
-    if (!todoHour || !todoMinute) return false;
+    // 1. Normalize the API time string (handles both "HH:mm:ss" and "HH:mm")
+    const timeParts = todo.schedule_time.split(':');
+    const todoHour = Number(timeParts[0]);
+    const todoMinute = Number(timeParts[1]);
+
+    // 2. Calculate absolute total minutes
     const todoTotalMinutes = todoHour * 60 + todoMinute;
-
     const currentSlotMinutes = currentSlot.hour * 60 + currentSlot.minute;
-    const nextSlot = timeSlots.value[index + 1];
 
+    // 3. Perfect Match Optimization: If it's a direct match for this slot's start time
+    const normalizedTodoStr = `${todoHour.toString().padStart(2, '0')}:${todoMinute.toString().padStart(2, '0')}`;
+    if (normalizedTodoStr === currentSlot.rawTimeStr) {
+      return true;
+    }
+
+    // 4. Range Optimization: Check if it falls into this slot's bucket window
+    const nextSlot = timeSlots.value[index + 1];
     if (nextSlot) {
       const nextSlotMinutes = nextSlot.hour * 60 + nextSlot.minute;
-      // Todo belongs here if it falls on or after this slot, but strictly before the next
       return todoTotalMinutes >= currentSlotMinutes && todoTotalMinutes < nextSlotMinutes;
     } else {
-      // For the final slot block, handle everything up to the absolute end of that block
       const endOfBlockMinutes = currentSlotMinutes + props.increment;
       return todoTotalMinutes >= currentSlotMinutes && todoTotalMinutes < endOfBlockMinutes;
     }
