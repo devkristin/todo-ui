@@ -104,11 +104,11 @@ const handleCheckboxChange = async (todo: any, checked: boolean) => {
   plannerStore.setUpdatingTodoId(null);
 };
 
-const templateMenu = ref();
+const routineMenu = ref();
 const filterPopover = ref();
 
-const showTemplateMenu = (event: Event) => {
-  templateMenu.value.toggle(event);
+const toggleRoutineMenu = (event: Event) => {
+  routineMenu.value.toggle(event);
 };
 
 const toggleFilterPopover = (event: Event) => {
@@ -117,14 +117,14 @@ const toggleFilterPopover = (event: Event) => {
 
 const menuItems = ref([
   {
-    label: 'Import a Template',
+    label: 'Import a Routine',
     icon: 'pi pi-file-import',
     command: () => {
       handleImport();
     },
   },
   {
-    label: 'Manage Templates',
+    label: 'Manage Routines',
     icon: 'pi pi-file-edit',
     command: () => {
       handleManage();
@@ -163,14 +163,14 @@ const handleManage = () => {
           class="!p-1.5 !rounded"
           variant="text"
           severity="secondary"
-          @click="showTemplateMenu"
+          @click="toggleRoutineMenu"
         >
           <i class="pi pi-copy"></i>
-          <span class="font-medium text-sm hidden xs:inline">Templates</span>
+          <span class="font-medium text-sm hidden xs:inline">Routines</span>
         </Button>
       </div>
 
-      <Menu ref="templateMenu" id="template_menu" :model="menuItems" :popup="true" />
+      <Menu ref="routineMenu" id="routine_menu" :model="menuItems" :popup="true" />
 
       <Popover ref="filterPopover" id="filter_popover" :dismissable="true">
         <div class="p-2 flex flex-col gap-4 min-w-[16rem]">

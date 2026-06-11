@@ -21,8 +21,8 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     {
-      path: '/templates',
-      component: () => import('../views/TemplatesView.vue'),
+      path: '/routines',
+      component: () => import('../views/RoutinesView.vue'),
       meta: { requiresAuth: true },
     },
     { path: '/:pathMatch(.*)*', redirect: '/' },
